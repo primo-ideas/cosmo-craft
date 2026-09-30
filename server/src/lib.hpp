@@ -19,6 +19,7 @@ class Instance {
   public:
     unsigned short port() const;
     void stop();
+    void wait();
 
   public:
     static Instance launch(std::string const &bind_addr, unsigned short port);

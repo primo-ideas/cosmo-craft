@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
 
 #include "lib.hpp"
@@ -9,8 +10,9 @@ using namespace std;
 
 int main(int ac, char **av) {
     po::options_description desc("Usage: cosmocraft-server");
-    desc.add_options()("help", "show this help")("bind_addr", po::value<std::string>())(
-        "port", po::value<unsigned short>());
+    desc.add_options()("help", "show this help")(
+        "bind_addr", po::value<std::string>()->default_value("127.0.0.1"))(
+        "port", po::value<unsigned short>()->default_value(8080));
 
     po::variables_map vm;
     po::store(po::parse_command_line(ac, av, desc), vm);
@@ -21,11 +23,18 @@ int main(int ac, char **av) {
         return 1;
     }
 
-    if (vm.count("compression")) {
-        cout << "Compression level was set to " << vm["compression"].as<int>() << ".\n";
-    } else {
-        cout << "Compression level was not set.\n";
-    }
-    auto instance =
-        cosmo::Instance::launch(vm["bind_addr"].as<std::string>(), vm["port"].as<unsigned short>());
+    auto bind_addr = vm["bind_addr"].as<std::string>();
+    auto port = vm["port"].as<unsigned short>();
+
+    auto instance = cosmo::Instance::launch(bind_addr, port);
+
+    boost::asio::io_context io;
+    boost::asio::signal_set signals(io, SIGINT, SIGTERM);
+    signals.async_wait([&](const std::error_code &ec, int sig) {
+        if (!ec)
+            std::cout << "signal " << sig << " reçu, arrêt...\n";
+        instance.stop();
+    });
+
+    instance.wait();
 }

@@ -38,6 +38,8 @@ unsigned short Instance::port() const {
 
 void Instance::stop() {
     impl_->listener->ioc().stop();
+}
+void Instance::wait() {
     for (auto &t : impl_->threads)
         t.join();
 }
