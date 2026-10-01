@@ -5,7 +5,7 @@
 
 #include "lib.hpp"
 
-TEST(All, All) {
+TEST(Instance, Instantiation_And_Stop) {
 
     ASSERT_NO_THROW(auto instance = cosmo::Instance::launch(); instance.stop());
 }
