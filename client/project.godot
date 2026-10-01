@@ -14,6 +14,10 @@ config/name="cosmo-craft-client"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Main="*uid://ci1n8gjpwjguk"
+
 [display]
 
 window/stretch/mode="canvas_items"
