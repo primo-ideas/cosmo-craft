@@ -11,10 +11,12 @@ class Instance {
     std::unique_ptr<Impl> impl_;
 
   public:
-    ~Instance();
+    Instance(Instance &&) noexcept;
+    Instance &operator=(Instance &&) noexcept;
+    ~Instance(); // stop + join
 
   private:
-    explicit Instance(Impl &&impl);
+    explicit Instance(std::unique_ptr<Impl> impl);
 
   public:
     unsigned short port() const;
@@ -22,7 +24,9 @@ class Instance {
     void wait();
 
   public:
+    [[nodiscard]]
     static Instance launch(std::string const &bind_addr, unsigned short port);
+    [[nodiscard]]
     static Instance launch();
 };
 
