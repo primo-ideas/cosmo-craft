@@ -81,7 +81,7 @@ TEST(Instance, Handshake) {
 TEST(Instance, HundredHandshakes) {
     auto instance = cosmo::Instance::launch().value();
     auto ioc = boost::asio::io_context();
-    for (auto i : std::ranges::views::(std::make_index_sequence<100>{})) {
+    for (auto i : std::ranges::views::indices(100)) {
         auto maybe_client = TestClient::handshake(ioc, instance.port());
         ASSERT_FALSE(maybe_client) << maybe_client.error().message();
     }
