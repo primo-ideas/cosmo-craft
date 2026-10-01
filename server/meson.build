@@ -49,7 +49,7 @@ executable('cosmocraft-server', 'src/main.cpp',
 
 test('tests',
   executable('tests', files('src/tests.cpp'),
-    dependencies: [core_dep, gtest, gtest_main],
+    dependencies: [core_dep, gtest, gtest_main, boost_headers],
     cpp_args: default_cpp_args,
     override_options: default_options
   )
