@@ -16,12 +16,9 @@ TEST(Instance, Nominal) {
     ASSERT_NO_THROW(instance.stop());
     ASSERT_NO_THROW(instance.wait());
     maybe_instance = cosmo::Instance::launch(8080);
-}
-
-TEST(Instance, Launch_Nominal) {
-    ASSERT_NO_THROW(auto instance = cosmo::Instance::launch());
-}
-
-TEST(Instance, Launch_Custom_Port) {
-    ASSERT_NO_THROW(auto instance = cosmo::Instance::launch());
+    ASSERT_TRUE(maybe_instance) << maybe_instance.error().message();
+    instance = std::move(maybe_instance.value());
+    ASSERT_NE(instance.port(), static_cast<unsigned short>(8080));
+    ASSERT_NO_THROW(instance.stop());
+    ASSERT_NO_THROW(instance.wait());
 }
