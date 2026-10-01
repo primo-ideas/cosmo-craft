@@ -42,8 +42,11 @@ void Session::on_run() {
 }
 
 void Session::on_accept(beast::error_code ec) {
-    if (ec)
+    spdlog::trace("HANDSHAKE");
+    if (ec) {
+        spdlog::warn("Handhshake error: {}", ec.message());
         return;
+    }
     do_read();
 }
 
@@ -51,12 +54,17 @@ void Session::do_read() {
     ws_.async_read(buffer_, beast::bind_front_handler(&Session::on_read, shared_from_this()));
 }
 
-void Session::on_read(beast::error_code ec, std::size_t) {
-    if (ec == websocket::error::closed)
+void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
+    spdlog::trace("READ ({} bytes)", bytes_read);
+    if (ec == websocket::error::closed) {
+        spdlog::debug("Connection closed");
         return;
+    }
 
-    if (ec)
+    if (ec) {
+        spdlog::warn("Read error: {}", ec.message());
         return;
+    }
 
     ws_.text(ws_.got_text());
     ws_.async_write(buffer_.data(),
@@ -64,10 +72,12 @@ void Session::on_read(beast::error_code ec, std::size_t) {
 }
 
 void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
-    boost::ignore_unused(bytes_transferred);
+    spdlog::trace("WRITE ({} bytes)", bytes_transferred);
 
-    if (ec)
+    if (ec) {
+        spdlog::warn("Write error: {}", ec.message());
         return;
+    }
 
     buffer_.consume(buffer_.size());
 
@@ -98,10 +108,10 @@ void Listener::do_accept() {
 
 void Listener::on_accept(beast::error_code ec, tcp::socket socket) {
     if (ec) {
-        spdlog::error("Accept error {}", ec.message());
+        spdlog::warn("Accept error {}", ec.message());
         return;
     } else {
-        spdlog::info("New connection");
+        spdlog::debug("New connection");
         std::make_shared<Session>(std::move(socket))->run();
     }
 

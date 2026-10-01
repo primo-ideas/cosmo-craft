@@ -28,13 +28,13 @@ int main(int ac, char **av) {
 
     auto instance = cosmo::Instance::launch(port, bind_addr);
 
-    boost::asio::io_context io;
-    boost::asio::signal_set signals(io, SIGINT, SIGTERM);
-    signals.async_wait([&](const std::error_code &ec, int sig) {
-        if (!ec)
-            std::cout << "signal " << sig << " reçu, arrêt...\n";
-        instance->stop();
-    });
+    // boost::asio::io_context io;
+    // boost::asio::signal_set signals(io, SIGINT, SIGTERM);
+    // signals.async_wait([&](const std::error_code &ec, int sig) {
+    //     if (!ec)
+    //         std::cout << "signal " << sig << " reçu, arrêt...\n";
+    //     instance->stop();
+    // });
 
     instance->wait();
 }
