@@ -1,4 +1,3 @@
-#include <array>
 #include <expected>
 #include <ranges>
 #include <system_error>
@@ -75,14 +74,16 @@ TEST(Instance, Handshake) {
     auto instance = cosmo::Instance::launch().value();
     auto ioc = boost::asio::io_context();
     auto maybe_client = TestClient::handshake(ioc, instance.port());
-    ASSERT_FALSE(maybe_client) << maybe_client.error().message();
+    ASSERT_TRUE(maybe_client) << maybe_client.error().message();
 }
 
 TEST(Instance, HundredHandshakes) {
     auto instance = cosmo::Instance::launch().value();
     auto ioc = boost::asio::io_context();
-    for (auto i : std::ranges::views::indices(100)) {
+    auto clients = std::vector<TestClient>();
+    for (auto _ : std::ranges::views::iota(1, 100)) {
         auto maybe_client = TestClient::handshake(ioc, instance.port());
-        ASSERT_FALSE(maybe_client) << maybe_client.error().message();
+        ASSERT_TRUE(maybe_client) << maybe_client.error().message();
+        clients.emplace_back(maybe_client.value());
     }
 }
