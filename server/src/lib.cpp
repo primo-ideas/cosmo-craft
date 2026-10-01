@@ -44,6 +44,7 @@ Instance::Instance(std::unique_ptr<Impl> impl)
 
 Instance::Instance(Instance &&) noexcept = default;
 Instance &Instance::operator=(Instance &&) noexcept = default;
+Instance::~Instance() = default;
 
 unsigned short Instance::port() const {
     return impl_->port;

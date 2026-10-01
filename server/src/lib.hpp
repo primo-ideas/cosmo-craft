@@ -13,7 +13,7 @@ class Instance {
   public:
     Instance(Instance &&) noexcept;
     Instance &operator=(Instance &&) noexcept;
-    ~Instance(); // stop + join
+    ~Instance();
 
   private:
     explicit Instance(std::unique_ptr<Impl> impl);
