@@ -26,15 +26,15 @@ int main(int ac, char **av) {
     auto bind_addr = vm["bind_addr"].as<std::string>();
     auto port = vm["port"].as<unsigned short>();
 
-    auto instance = cosmo::Instance::launch(bind_addr, port);
+    auto instance = cosmo::Instance::launch(port, bind_addr);
 
     boost::asio::io_context io;
     boost::asio::signal_set signals(io, SIGINT, SIGTERM);
     signals.async_wait([&](const std::error_code &ec, int sig) {
         if (!ec)
             std::cout << "signal " << sig << " reçu, arrêt...\n";
-        instance.stop();
+        instance->stop();
     });
 
-    instance.wait();
+    instance->wait();
 }

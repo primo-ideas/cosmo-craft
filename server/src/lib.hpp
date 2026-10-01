@@ -1,7 +1,9 @@
 #pragma once
 
+#include <expected>
 #include <memory>
 #include <string>
+#include <system_error>
 
 namespace cosmo {
 
@@ -25,9 +27,8 @@ class Instance {
 
   public:
     [[nodiscard]]
-    static Instance launch(std::string const &bind_addr, unsigned short port);
-    [[nodiscard]]
-    static Instance launch();
+    static std::expected<Instance, std::error_code>
+    launch(unsigned short port = 0, std::string const &bind_addr = "127.0.0.1");
 };
 
 } // namespace cosmo

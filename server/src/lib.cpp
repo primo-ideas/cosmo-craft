@@ -1,7 +1,9 @@
 #include "lib.hpp"
 
+#include <expected>
 #include <memory>
 #include <string>
+#include <system_error>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -13,6 +15,7 @@
 
 #include "net.hpp"
 
+namespace beast = boost::beast;
 namespace net = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
@@ -58,11 +61,8 @@ void Instance::wait() {
         t.join();
 }
 
-Instance Instance::launch() {
-    return launch("127.0.0.1", 0);
-}
-
-Instance Instance::launch(std::string const &bind_addr, unsigned short port) {
+std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
+                                                          std::string const &bind_addr) {
     auto nb_thr = std::thread::hardware_concurrency();
     if (nb_thr == 0) {
         nb_thr = 1;
@@ -70,17 +70,26 @@ Instance Instance::launch(std::string const &bind_addr, unsigned short port) {
 
     auto impl = std::make_unique<Impl>(nb_thr);
 
-    auto listener = std::make_shared<transport::Listener>(
-        impl->ioc, tcp::endpoint{net::ip::make_address(bind_addr), port});
+    beast::error_code ec;
+
+    beast::net::ip::tcp::acceptor acceptor(impl->ioc);
+    tcp::endpoint endpoint{net::ip::make_address(bind_addr), port};
+    if (acceptor.open(endpoint.protocol(), ec))
+        return std::unexpected(ec);
+    if (acceptor.set_option(net::socket_base::reuse_address(true), ec))
+        return std::unexpected(ec);
+    if (acceptor.bind(endpoint, ec))
+        return std::unexpected(ec);
+    if (acceptor.listen(net::socket_base::max_listen_connections, ec))
+        return std::unexpected(ec);
+
+    auto listener = std::make_shared<transport::Listener>(impl->ioc, std::move(acceptor));
     listener->run();
 
-    std::vector<std::thread> v;
-    v.reserve(nb_thr);
     for (unsigned i = 0; i < nb_thr; ++i)
-        v.emplace_back([&ioc = impl->ioc] { ioc.run(); });
+        impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
 
     impl->listener = listener;
-    impl->threads = std::move(v);
     impl->port = impl->listener->acceptor().local_endpoint().port();
     return Instance(std::move(impl));
 }

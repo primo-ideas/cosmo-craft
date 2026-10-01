@@ -3,9 +3,7 @@
 
 #include <cstdlib>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include <boost/asio/dispatch.hpp>
@@ -76,26 +74,9 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
     do_read();
 }
 
-Listener::Listener(net::io_context &ioc, tcp::endpoint endpoint)
+Listener::Listener(net::io_context &ioc, tcp::acceptor acceptor)
     : ioc_(ioc)
-    , acceptor_(ioc) {
-    beast::error_code ec;
-
-    std::ignore = acceptor_.open(endpoint.protocol(), ec);
-    if (ec)
-        throw std::runtime_error("Open error");
-
-    std::ignore = acceptor_.set_option(net::socket_base::reuse_address(true), ec);
-    if (ec)
-        throw std::runtime_error("Reuse addr error");
-
-    std::ignore = acceptor_.bind(endpoint, ec);
-    if (ec)
-        throw std::runtime_error("Bind error");
-
-    std::ignore = acceptor_.listen(net::socket_base::max_listen_connections, ec);
-    if (ec)
-        throw std::runtime_error("Listen error");
+    , acceptor_(std::move(acceptor)) {
 }
 
 void Listener::run() {

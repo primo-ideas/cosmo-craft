@@ -30,7 +30,7 @@ class Listener : public std::enable_shared_from_this<Listener> {
     boost::asio::ip::tcp::acceptor acceptor_;
 
   public:
-    Listener(boost::asio::io_context &ioc, boost::asio::ip::tcp::endpoint endpoint);
+    Listener(boost::asio::io_context &ioc, boost::asio::ip::tcp::acceptor acceptor);
     void run();
     boost::asio::ip::tcp::acceptor const &acceptor();
     boost::asio::io_context &ioc();
