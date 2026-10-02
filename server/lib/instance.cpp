@@ -1,5 +1,3 @@
-#include "lib.hpp"
-
 #include <expected>
 #include <memory>
 #include <string>
@@ -12,9 +10,11 @@
 #include <boost/asio/strand.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
+#include <spdlog/spdlog.h>
 
-#include "net.hpp"
-#include "spdlog/spdlog.h"
+#include "core.hpp"
+#include "transport.hpp"
+
 
 namespace beast = boost::beast;
 namespace net = boost::asio;

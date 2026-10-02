@@ -1,5 +1,5 @@
 
-#include "net.hpp"
+#include "transport.hpp"
 
 #include <cstdlib>
 #include <memory>
@@ -66,9 +66,9 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
         return;
     }
 
-    ws_.text(ws_.got_text());
-    ws_.async_write(buffer_.data(),
-                    beast::bind_front_handler(&Session::on_write, shared_from_this()));
+    // ws_.text(ws_.got_text());
+    // ws_.async_write(buffer_.data(),
+    //                 beast::bind_front_handler(&Session::on_write, shared_from_this()));
 }
 
 void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {

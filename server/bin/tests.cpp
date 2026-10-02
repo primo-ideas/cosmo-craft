@@ -11,7 +11,7 @@
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
-#include "lib.hpp"
+#include "core.hpp"
 
 TEST(Instance, Nominal) {
     ASSERT_NO_THROW(std::ignore = cosmo::Instance::launch());

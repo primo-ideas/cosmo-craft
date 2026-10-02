@@ -26,10 +26,10 @@ spdlog = dependency('spdlog')
 core = static_library(
   'core',
   files(
-    'lib/lib.cpp',
+    'lib/instance.cpp',
     'lib/net.cpp'
   ),
-  include_directories: 'lib',
+  include_directories: ['lib', 'lib/include'],
   dependencies: [boost_headers, spdlog],
   cpp_args: default_cpp_args,
   override_options: default_options,
@@ -47,7 +47,7 @@ executable('cosmocraft-server', 'bin/main.cpp',
 )
 
 test('tests',
-  executable('tests', files('src/tests.cpp'),
+  executable('tests', files('bin/tests.cpp'),
     dependencies: [core_dep, gtest, boost_headers, spdlog],
     cpp_args: default_cpp_args,
     override_options: default_options

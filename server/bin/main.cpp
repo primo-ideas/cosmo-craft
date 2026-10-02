@@ -5,7 +5,7 @@
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
-#include "lib.hpp"
+#include "core.hpp"
 
 namespace po = boost::program_options;
 using namespace std;
