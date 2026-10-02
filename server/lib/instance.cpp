@@ -13,6 +13,7 @@
 #include <spdlog/spdlog.h>
 
 #include "core.hpp"
+#include "game.hpp"
 #include "log.hpp"
 #include "net.hpp"
 
@@ -90,9 +91,8 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
 
     for (unsigned i = 0; i < nb_thr - 1; ++i)
         impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
-    impl->threads.emplace_back([&ioc = impl->ioc] {
-        // game llop
-    });
+    impl->threads.emplace_back([&ioc = impl->ioc] { run_game(ioc); });
+
     impl->listener = listener;
     impl->port = impl->listener->acceptor().local_endpoint().port();
     return Instance(std::move(impl));

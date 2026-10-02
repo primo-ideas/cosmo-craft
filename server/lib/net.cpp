@@ -1,7 +1,9 @@
 #include "net.hpp"
 
 #include <cstdlib>
+#include <expected>
 #include <memory>
+#include <mutex>
 
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/strand.hpp>
@@ -59,7 +61,7 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
     }
 
     if (ec) {
-        logger.warn("Read error: {}", ec.message());
+        logger.trace("Read error: {}", ec.message());
         return;
     }
 
@@ -91,6 +93,21 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
     buffer_.consume(buffer_.size());
 
     do_read();
+}
+
+std::expected<std::string, Session::pop_message_error> Session::pop_message() {
+    if (to_read_.empty()) {
+        return std::unexpected(pop_message_error::no_message);
+    }
+    auto front = to_read_.front();
+    to_read_.pop();
+    return front;
+}
+
+void Session::push_message(std::string const &msg) {
+    std::lock_guard lock(write_mutex_);
+
+    to_write_.push(msg);
 }
 
 Listener::Listener(asio::io_context &ioc, tcp::acceptor acceptor)

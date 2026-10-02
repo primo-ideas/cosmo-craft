@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdlib>
+#include <expected>
 #include <memory>
+#include <queue>
 
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/strand.hpp>
@@ -13,6 +15,10 @@ namespace cosmo {
 class Session : public std::enable_shared_from_this<Session> {
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
     boost::beast::flat_buffer buffer_;
+    std::queue<std::string> to_read_;
+    std::mutex read_mutex_;
+    std::queue<std::string> to_write_;
+    std::mutex write_mutex_;
 
   public:
     explicit Session(boost::asio::ip::tcp::socket &&socket);
@@ -23,6 +29,9 @@ class Session : public std::enable_shared_from_this<Session> {
     void do_read();
     void on_read(boost::beast::error_code ec, std::size_t bytes_transferred);
     void on_write(boost::beast::error_code ec, std::size_t bytes_transferred);
+    enum class pop_message_error { no_message };
+    std::expected<std::string, pop_message_error> pop_message();
+    void push_message(std::string const &msg);
 };
 
 class Listener : public std::enable_shared_from_this<Listener> {
