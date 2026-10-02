@@ -66,9 +66,19 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
         return;
     }
 
+    if (!ws_.got_text()) {
+        ws_.async_close(boost::beast::websocket::close_reason(
+                            boost::beast::websocket::close_code::unknown_data),
+                        beast::bind_front_handler(&Session::on_close, shared_from_this()));
+    }
+    auto buffer_str = boost::beast::buffers_to_string(buffer_);
     // ws_.text(ws_.got_text());
     // ws_.async_write(buffer_.data(),
     //                 beast::bind_front_handler(&Session::on_write, shared_from_this()));
+}
+
+void Session::on_close(beast::error_code ec) {
+    spdlog::trace("Closed");
 }
 
 void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {

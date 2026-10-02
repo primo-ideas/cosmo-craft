@@ -8,9 +8,11 @@ AllowShortFunctionsOnASingleLine: None
 BreakConstructorInitializers: BeforeComma
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex:           '^\<[^/]+\>$'
-    Priority:        1
-  - Regex:           '^\<[^/]+/.+\>$'
+  - Regex:           '^<Windows.h>$'
     Priority:        2
-  - Regex:           '^".+"$'
+  - Regex:           '^\<[^/]+\>$'
     Priority:        3
+  - Regex:           '^\<[^/]+/.+\>$'
+    Priority:        4
+  - Regex:           '^".+"$'
+    Priority:        5
