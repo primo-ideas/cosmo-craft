@@ -7,7 +7,8 @@
 #include <boost/asio/strand.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
-#include <spdlog/spdlog.h>
+
+#include "log.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -16,7 +17,6 @@ namespace asio = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
 namespace cosmo {
-namespace transport {
 
 Session::Session(tcp::socket &&socket)
     : ws_(std::move(socket)) {
@@ -39,9 +39,9 @@ void Session::on_run() {
 }
 
 void Session::on_accept(beast::error_code ec) {
-    spdlog::trace("HANDSHAKE");
+    logger.trace("HANDSHAKE");
     if (ec) {
-        spdlog::warn("Handhshake error: {}", ec.message());
+        logger.warn("Handhshake error: {}", ec.message());
         return;
     }
     do_read();
@@ -52,14 +52,14 @@ void Session::do_read() {
 }
 
 void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
-    spdlog::trace("READ ({} bytes)", bytes_read);
+    logger.trace("READ ({} bytes)", bytes_read);
     if (ec == websocket::error::closed) {
-        spdlog::debug("Connection closed");
+        logger.debug("Connection closed");
         return;
     }
 
     if (ec) {
-        spdlog::warn("Read error: {}", ec.message());
+        logger.warn("Read error: {}", ec.message());
         return;
     }
 
@@ -77,14 +77,14 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
 }
 
 void Session::on_close(beast::error_code ec) {
-    spdlog::trace("Closed");
+    logger.trace("Closed");
 }
 
 void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
-    spdlog::trace("WRITE ({} bytes)", bytes_transferred);
+    logger.trace("WRITE ({} bytes)", bytes_transferred);
 
     if (ec) {
-        spdlog::warn("Write error: {}", ec.message());
+        logger.warn("Write error: {}", ec.message());
         return;
     }
 
@@ -117,15 +117,14 @@ void Listener::do_accept() {
 
 void Listener::on_accept(beast::error_code ec, tcp::socket socket) {
     if (ec) {
-        spdlog::warn("Accept error {}", ec.message());
+        logger.warn("Accept error {}", ec.message());
         return;
     } else {
-        spdlog::debug("New connection");
+        logger.debug("New connection");
         std::make_shared<Session>(std::move(socket))->run();
     }
 
     do_accept();
 }
 
-} // namespace transport
 } // namespace cosmo

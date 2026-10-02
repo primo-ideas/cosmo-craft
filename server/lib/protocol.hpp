@@ -1,6 +1,11 @@
 #pragma once
 
+#include <string>
+
 namespace cosmo {
-namespace protocol {}
+
+struct ClientAuth {
+    std::string nickname;
+};
 
 } // namespace cosmo

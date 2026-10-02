@@ -23,7 +23,7 @@ namespace cosmo {
 
 struct Instance::Impl {
     asio::io_context ioc;
-    std::shared_ptr<transport::Listener> listener;
+    std::shared_ptr<Listener> listener;
     std::vector<std::thread> threads;
     unsigned short port;
 
@@ -83,13 +83,15 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
     if (acceptor.listen(asio::socket_base::max_listen_connections, ec))
         return std::unexpected(ec);
 
-    auto listener = std::make_shared<transport::Listener>(impl->ioc, std::move(acceptor));
+    auto listener = std::make_shared<Listener>(impl->ioc, std::move(acceptor));
     listener->run();
     spdlog::info("Listenning on {}:{}", bind_addr, port);
 
-    for (unsigned i = 0; i < nb_thr; ++i)
+    for (unsigned i = 0; i < nb_thr - 1; ++i)
         impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
-
+    impl->threads.emplace_back([&ioc = impl->ioc] {
+        // game llop
+    });
     impl->listener = listener;
     impl->port = impl->listener->acceptor().local_endpoint().port();
     return Instance(std::move(impl));

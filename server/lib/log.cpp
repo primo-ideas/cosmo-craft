@@ -1,5 +1,3 @@
-#include "log.hpp"
-
 #ifdef _WIN32
 #include <Windows.h>
 #include <consoleapi.h>
@@ -11,15 +9,10 @@
 #include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/wincolor_sink.h>
 #include <spdlog/spdlog.h>
 
-#include "core.hpp"
-
-// #include "spdlog/common.h"
-// #include "spdlog/sinks/wincolor_sink.h"
-
 namespace cosmo {
-namespace log {
 
 auto logger = spdlog::logger("cosmo_logger");
 
@@ -76,10 +69,10 @@ class thread_flag : public spdlog::custom_flag_formatter {
     void format(spdlog::details::log_msg const &msg, std::tm const &,
                 spdlog::memory_buf_t &dest) override {
         if (color_)
-            fmt::format_to(std::back_inserter(dest), "{}[{}]\033[0m ", thread_color(msg.thread_id),
+            fmt::format_to(std::back_inserter(dest), "{}{}\033[0m", thread_color(msg.thread_id),
                            msg.thread_id);
         else
-            fmt::format_to(std::back_inserter(dest), "[{}] ", msg.thread_id);
+            fmt::format_to(std::back_inserter(dest), "{}", msg.thread_id);
     }
 
     std::unique_ptr<custom_flag_formatter> clone() const override {
@@ -87,37 +80,30 @@ class thread_flag : public spdlog::custom_flag_formatter {
     }
 };
 
-void init() {
+void init_logger() {
 #ifdef _WIN32
-    // Active les séquences ANSI dans la console Windows.
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD mode = 0;
     if (GetConsoleMode(out, &mode))
         SetConsoleMode(out, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
     spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
-    // Sink ANSI sur toutes les plateformes : le sink Windows natif ne sait pas
-    // afficher les couleurs 24 bits du thread_id.
-    auto sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
-    sink->set_color(spdlog::level::trace, "\033[90m");      // gris
-    sink->set_color(spdlog::level::debug, "\033[32m");      // vert
-    sink->set_color(spdlog::level::info, "\033[37m");       // blanc
-    sink->set_color(spdlog::level::warn, "\033[33m");       // jaune
-    sink->set_color(spdlog::level::err, "\033[31m");        // rouge
-    sink->set_color(spdlog::level::critical, "\033[1;31m"); // rouge gras
+    auto sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
+    sink->set_color(spdlog::level::trace, 90);
+    sink->set_color(spdlog::level::debug, 32);
+    sink->set_color(spdlog::level::info, 37);
+    sink->set_color(spdlog::level::warn, 33);
+    sink->set_color(spdlog::level::err, 31);
+    sink->set_color(spdlog::level::critical, 31);
 
-    // Même règle que le sink : pas de couleur hors d'un terminal.
-    bool color =
-        spdlog::details::os::in_terminal(stdout) && spdlog::details::os::is_color_terminal();
+    // bool color =
+    //     spdlog::details::os::in_terminal(stdout) && spdlog::details::os::is_color_terminal();
 
     auto formatter = std::make_unique<spdlog::pattern_formatter>();
-    formatter->add_flag<thread_flag>('*', color).set_pattern("%*%^[%H:%M:%S.%e] %v%$");
+    formatter->add_flag<thread_flag>('*', true).set_pattern("[%5*]%^[%H:%M:%S.%e] %v%$");
     sink->set_formatter(std::move(formatter));
 
-    // auto logger = std::make_shared<spdlog::logger>("cosmo", std::move(sink));
-    // logger.set_level(spdlog::level::trace);
-    // spdlog::set_default_logger(std::move(logger));
+    logger = spdlog::logger("cosmo", std::move(sink));
 }
 
-} // namespace log
 } // namespace cosmo

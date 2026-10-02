@@ -31,9 +31,6 @@ class Instance {
     launch(unsigned short port = 0, std::string const &bind_addr = "127.0.0.1");
 };
 
-namespace log {
+extern void init_logger();
 
-extern void init();
-
-}
 } // namespace cosmo

@@ -9,7 +9,6 @@
 #include <boost/beast/websocket.hpp>
 
 namespace cosmo {
-namespace transport {
 
 class Session : public std::enable_shared_from_this<Session> {
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
@@ -40,7 +39,5 @@ class Listener : public std::enable_shared_from_this<Listener> {
     void do_accept();
     void on_accept(boost::beast::error_code ec, boost::asio::ip::tcp::socket socket);
 };
-
-} // namespace transport
 
 } // namespace cosmo
