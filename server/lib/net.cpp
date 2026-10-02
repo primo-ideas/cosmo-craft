@@ -1,10 +1,7 @@
-
-#include "transport.hpp"
+#include "net.hpp"
 
 #include <cstdlib>
 #include <memory>
-#include <string>
-#include <utility>
 
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/strand.hpp>
@@ -15,7 +12,7 @@
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace websocket = beast::websocket;
-namespace net = boost::asio;
+namespace asio = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
 namespace cosmo {
@@ -26,8 +23,8 @@ Session::Session(tcp::socket &&socket)
 }
 
 void Session::run() {
-    net::dispatch(ws_.get_executor(),
-                  beast::bind_front_handler(&Session::on_run, shared_from_this()));
+    asio::dispatch(ws_.get_executor(),
+                   beast::bind_front_handler(&Session::on_run, shared_from_this()));
 }
 
 void Session::on_run() {
@@ -71,7 +68,9 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
                             boost::beast::websocket::close_code::unknown_data),
                         beast::bind_front_handler(&Session::on_close, shared_from_this()));
     }
-    auto buffer_str = boost::beast::buffers_to_string(buffer_);
+    auto buffer_str =
+        std::string(static_cast<char const *>(buffer_.cdata().data()), buffer_.cdata().size());
+    buffer_.consume(bytes_read);
     // ws_.text(ws_.got_text());
     // ws_.async_write(buffer_.data(),
     //                 beast::bind_front_handler(&Session::on_write, shared_from_this()));
@@ -94,7 +93,7 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
     do_read();
 }
 
-Listener::Listener(net::io_context &ioc, tcp::acceptor acceptor)
+Listener::Listener(asio::io_context &ioc, tcp::acceptor acceptor)
     : ioc_(ioc)
     , acceptor_(std::move(acceptor)) {
 }
@@ -112,7 +111,7 @@ boost::asio::io_context &Listener::ioc() {
 }
 
 void Listener::do_accept() {
-    acceptor_.async_accept(net::make_strand(ioc_),
+    acceptor_.async_accept(asio::make_strand(ioc_),
                            beast::bind_front_handler(&Listener::on_accept, shared_from_this()));
 }
 

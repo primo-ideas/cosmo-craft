@@ -1,27 +1,27 @@
-#include "logger.hpp"
-
-#include "spdlog/pattern_formatter.h"
+#include "log.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
-
 #include <consoleapi.h>
 #include <winbase.h>
 #include <winnt.h>
 #endif
 
 #include <spdlog/cfg/env.h>
+#include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 #include "core.hpp"
+
 // #include "spdlog/common.h"
 // #include "spdlog/sinks/wincolor_sink.h"
 
-auto cosmo::logger = spdlog::logger("cosmo_logger");
-
 namespace cosmo {
+namespace log {
+
+auto logger = spdlog::logger("cosmo_logger");
 
 std::string thread_color(size_t thread_id) {
     static std::mutex mutex;
@@ -107,4 +107,5 @@ void init_logger() {
     // #endif
 }
 
+} // namespace log
 } // namespace cosmo
