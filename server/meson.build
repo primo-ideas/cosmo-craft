@@ -22,6 +22,7 @@ gtest = dependency('gtest')
 boost_headers = dependency('boost')
 boost_program_options = dependency('boost', modules: ['program_options'])
 spdlog = dependency('spdlog')
+json = dependency('nlohmann_json')
 
 core = static_library(
   'core',
@@ -31,7 +32,7 @@ core = static_library(
     'lib/log.cpp'
   ),
   include_directories: ['lib', 'lib/include'],
-  dependencies: [boost_headers, spdlog],
+  dependencies: [boost_headers, spdlog, json],
   cpp_args: default_cpp_args,
   override_options: default_options,
 )
