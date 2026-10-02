@@ -87,7 +87,7 @@ class thread_flag : public spdlog::custom_flag_formatter {
     }
 };
 
-void init_logger() {
+void init() {
 #ifdef _WIN32
     // Active les séquences ANSI dans la console Windows.
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
