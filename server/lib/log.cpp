@@ -11,6 +11,7 @@
 
 #include <spdlog/cfg/env.h>
 #include <spdlog/pattern_formatter.h>
+#include <spdlog/sinks/ansicolor_sink-inl.h>
 #include <spdlog/sinks/ansicolor_sink.h>
 #include <spdlog/spdlog.h>
 
@@ -90,22 +91,19 @@ void init_logger() {
         SetConsoleMode(out, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
     spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
-    auto sink = spdlog::sinks::ansicolor_stdout_sink_mt(spdlog::color_mode::automatic);
-    auto sink_p = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_st>(std::move(sink));
-    // auto sink =
-    //     std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>(spdlog::color_mode::automatic);
-    // sink->set_color(spdlog::level::trace, std::string("\033[90m"));
-    // sink->set_color(spdlog::level::debug, "\033[32m");
-    // sink->set_color(spdlog::level::info, "\033[37m");
-    // sink->set_color(spdlog::level::warn, "\033[33m");
-    // sink->set_color(spdlog::level::err, "\033[31m");
-    // sink->set_color(spdlog::level::critical, "\033[1;31m");
-
-    // bool color =
-    //     spdlog::details::os::in_terminal(stdout) && spdlog::details::os::is_color_terminal();
+    auto sink =
+        std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>(spdlog::color_mode::automatic);
+    sink->set_color(spdlog::level::trace, "\033[90m");
+    sink->set_color(spdlog::level::debug, "\033[32m");
+    sink->set_color(spdlog::level::info, "\033[37m");
+    sink->set_color(spdlog::level::warn, "\033[33m");
+    sink->set_color(spdlog::level::err, "\033[31m");
+    sink->set_color(spdlog::level::critical, "\033[1;31m");
+    bool color =
+        spdlog::details::os::in_terminal(stdout) && spdlog::details::os::is_color_terminal();
 
     auto formatter = std::make_unique<spdlog::pattern_formatter>();
-    formatter->add_flag<thread_flag>('*', true).set_pattern("[%5*]%^[%H:%M:%S.%e] %v%$");
+    formatter->add_flag<thread_flag>('*', color).set_pattern("[%5*]%^[%H:%M:%S.%e] %v%$");
     sink->set_formatter(std::move(formatter));
 
     logger = spdlog::logger("cosmo", std::move(sink));
