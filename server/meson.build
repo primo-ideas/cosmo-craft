@@ -19,29 +19,28 @@ else
 endif
 
 gtest = dependency('gtest')
-# gtest_main = dependency('gtest_main')
 boost_headers = dependency('boost')
-boost_po = dependency('boost', modules: ['program_options'])
+boost_program_options = dependency('boost', modules: ['program_options'])
 spdlog = dependency('spdlog')
 
 core = static_library(
   'core',
   files(
-    'src/lib.cpp',
-    'src/net.cpp'
+    'lib/lib.cpp',
+    'lib/net.cpp'
   ),
-  include_directories: 'src',
+  include_directories: 'lib',
   dependencies: [boost_headers, spdlog],
   cpp_args: default_cpp_args,
   override_options: default_options,
 )
 core_dep = declare_dependency(
   link_with: core,
-  include_directories: 'src',
+  include_directories: 'lib/include',
 )
 
-executable('cosmocraft-server', 'src/main.cpp',
-  dependencies: [core_dep, boost_po, spdlog],
+executable('cosmocraft-server', 'bin/main.cpp',
+  dependencies: [core_dep, boost_program_options, spdlog],
   cpp_args: default_cpp_args,
   override_options: default_options,
   install: true
