@@ -71,11 +71,29 @@ class thread_flag : public spdlog::custom_flag_formatter {
 
     void format(spdlog::details::log_msg const &msg, std::tm const &,
                 spdlog::memory_buf_t &dest) override {
+        // Padding calculé sur l'id visible : les séquences ANSI ne comptent pas.
+        auto id = fmt::format("{}", msg.thread_id);
+        size_t pad = padinfo_.width_ > id.size() ? padinfo_.width_ - id.size() : 0;
+        size_t left = 0;
+        switch (padinfo_.side_) {
+        case spdlog::details::padding_info::pad_side::left: // %5*  -> aligné à droite
+            left = pad;
+            break;
+        case spdlog::details::padding_info::pad_side::right: // %-5* -> aligné à gauche
+            left = 0;
+            break;
+        case spdlog::details::padding_info::pad_side::center: // %=5*
+            left = pad / 2;
+            break;
+        }
+
+        auto out = std::back_inserter(dest);
+        fmt::format_to(out, "{:{}}", "", left);
         if (color_)
-            fmt::format_to(std::back_inserter(dest), "{}{}\033[0m", thread_color(msg.thread_id),
-                           msg.thread_id);
+            fmt::format_to(out, "{}{}\033[0m", thread_color(msg.thread_id), id);
         else
-            fmt::format_to(std::back_inserter(dest), "{}", msg.thread_id);
+            fmt::format_to(out, "{}", id);
+        fmt::format_to(out, "{:{}}", "", pad - left);
     }
 
     std::unique_ptr<custom_flag_formatter> clone() const override {
