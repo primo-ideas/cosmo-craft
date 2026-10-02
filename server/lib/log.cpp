@@ -1,3 +1,5 @@
+// By Claude Opus
+
 #include <memory>
 
 #include "spdlog/common.h"
@@ -30,7 +32,6 @@ std::string thread_color(size_t thread_id) {
     constexpr double golden_ratio_conjugate = 0.618033988749895;
     double hue = std::fmod(colors.size() * golden_ratio_conjugate, 1.0) * 6;
 
-    // HSV -> RGB avec S = 0.7 et V = 1
     constexpr double s = 0.7;
     double f = hue - std::floor(hue);
     double p = 1 - s, q = 1 - s * f, t = 1 - s * (1 - f);
@@ -71,18 +72,17 @@ class thread_flag : public spdlog::custom_flag_formatter {
 
     void format(spdlog::details::log_msg const &msg, std::tm const &,
                 spdlog::memory_buf_t &dest) override {
-        // Padding calculé sur l'id visible : les séquences ANSI ne comptent pas.
         auto id = fmt::format("{}", msg.thread_id);
         size_t pad = padinfo_.width_ > id.size() ? padinfo_.width_ - id.size() : 0;
         size_t left = 0;
         switch (padinfo_.side_) {
-        case spdlog::details::padding_info::pad_side::left: // %5*  -> aligné à droite
+        case spdlog::details::padding_info::pad_side::left:
             left = pad;
             break;
-        case spdlog::details::padding_info::pad_side::right: // %-5* -> aligné à gauche
+        case spdlog::details::padding_info::pad_side::right:
             left = 0;
             break;
-        case spdlog::details::padding_info::pad_side::center: // %=5*
+        case spdlog::details::padding_info::pad_side::center:
             left = pad / 2;
             break;
         }
@@ -108,7 +108,7 @@ void init_logger() {
     if (GetConsoleMode(out, &mode))
         SetConsoleMode(out, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
-    spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
+    // spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
     auto sink =
         std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>(spdlog::color_mode::automatic);
     sink->set_color(spdlog::level::trace, "\033[90m");
@@ -121,7 +121,7 @@ void init_logger() {
         spdlog::details::os::in_terminal(stdout) && spdlog::details::os::is_color_terminal();
 
     auto formatter = std::make_unique<spdlog::pattern_formatter>();
-    formatter->add_flag<thread_flag>('*', color).set_pattern("[%5*]%^[%H:%M:%S.%e] %v%$");
+    formatter->add_flag<thread_flag>('*', color).set_pattern("[%5*] [%H:%M:%S.%e] %^%v%$");
     sink->set_formatter(std::move(formatter));
 
     logger = spdlog::logger("cosmo", std::move(sink));

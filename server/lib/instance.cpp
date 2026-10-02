@@ -13,6 +13,7 @@
 #include <spdlog/spdlog.h>
 
 #include "core.hpp"
+#include "log.hpp"
 #include "net.hpp"
 
 namespace beast = boost::beast;
@@ -85,7 +86,7 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
 
     auto listener = std::make_shared<Listener>(impl->ioc, std::move(acceptor));
     listener->run();
-    spdlog::info("Listenning on {}:{}", bind_addr, port);
+    logger.info("Listenning on {}:{}", bind_addr, port);
 
     for (unsigned i = 0; i < nb_thr - 1; ++i)
         impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
