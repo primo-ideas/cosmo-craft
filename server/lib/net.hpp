@@ -37,12 +37,15 @@ class Session : public std::enable_shared_from_this<Session> {
 class Listener : public std::enable_shared_from_this<Listener> {
     boost::asio::io_context &ioc_;
     boost::asio::ip::tcp::acceptor acceptor_;
+    std::vector<std::shared_ptr<Session>> sessions_;
 
   public:
     Listener(boost::asio::io_context &ioc, boost::asio::ip::tcp::acceptor acceptor);
     void run();
     boost::asio::ip::tcp::acceptor const &acceptor();
     boost::asio::io_context &ioc();
+
+    std::vector<std::shared_ptr<Session>> sessions();
 
   private:
     void do_accept();

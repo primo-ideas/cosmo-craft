@@ -96,6 +96,7 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
 }
 
 std::expected<std::string, Session::pop_message_error> Session::pop_message() {
+    std::lock_guard lock(read_mutex_);
     if (to_read_.empty()) {
         return std::unexpected(pop_message_error::no_message);
     }
@@ -142,6 +143,10 @@ void Listener::on_accept(beast::error_code ec, tcp::socket socket) {
     }
 
     do_accept();
+}
+
+std::vector<std::shared_ptr<Session>> Listener::sessions() {
+    return sessions_;
 }
 
 } // namespace cosmo

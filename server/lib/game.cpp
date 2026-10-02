@@ -1,10 +1,12 @@
 #include "game.hpp"
 
-namespace asio = boost::asio;
+#include "net.hpp"
+
+// namespace asio = boost::asio;
 
 namespace cosmo {
 
-void run_game(asio::io_context &ioc) {
+void run_game(std::shared_ptr<Listener> listener) {
 }
 
 } // namespace cosmo
