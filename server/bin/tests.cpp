@@ -92,8 +92,7 @@ TEST(Instance, HundredHandshakes) {
 }
 
 int main(int argc, char **argv) {
-    spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
-    spdlog::cfg::load_env_levels();
+    cosmo::init_logger();
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

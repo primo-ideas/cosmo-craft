@@ -2,8 +2,6 @@
 
 #include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
-#include <spdlog/cfg/env.h>
-#include <spdlog/spdlog.h>
 
 #include "core.hpp"
 
@@ -25,8 +23,7 @@ int main(int ac, char **av) {
         return 1;
     }
 
-    spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
-    spdlog::cfg::load_env_levels();
+    cosmo::init_logger();
 
     auto bind_addr = vm["bind_addr"].as<std::string>();
     auto port = vm["port"].as<unsigned short>();
