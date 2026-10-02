@@ -125,6 +125,9 @@ void init_logger() {
     sink->set_formatter(std::move(formatter));
 
     logger = spdlog::logger("cosmo", std::move(sink));
+    if (auto const *lvl = std::getenv("COSMO_LOG")) {
+        logger.set_level(spdlog::level::from_str(lvl));
+    }
 }
 
 } // namespace cosmo
