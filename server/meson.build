@@ -19,7 +19,7 @@ else
 endif
 
 gtest = dependency('gtest')
-gtest_main = dependency('gtest_main')
+# gtest_main = dependency('gtest_main')
 boost_headers = dependency('boost')
 boost_po = dependency('boost', modules: ['program_options'])
 spdlog = dependency('spdlog')
@@ -41,7 +41,7 @@ core_dep = declare_dependency(
 )
 
 executable('cosmocraft-server', 'src/main.cpp',
-  dependencies: [core_dep, boost_po],
+  dependencies: [core_dep, boost_po, spdlog],
   cpp_args: default_cpp_args,
   override_options: default_options,
   install: true
@@ -49,7 +49,7 @@ executable('cosmocraft-server', 'src/main.cpp',
 
 test('tests',
   executable('tests', files('src/tests.cpp'),
-    dependencies: [core_dep, gtest, gtest_main, boost_headers],
+    dependencies: [core_dep, gtest, boost_headers, spdlog],
     cpp_args: default_cpp_args,
     override_options: default_options
   )

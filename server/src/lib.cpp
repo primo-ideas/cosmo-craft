@@ -14,6 +14,7 @@
 #include <boost/beast/websocket.hpp>
 
 #include "net.hpp"
+#include "spdlog/spdlog.h"
 
 namespace beast = boost::beast;
 namespace net = boost::asio;
@@ -85,6 +86,7 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
 
     auto listener = std::make_shared<transport::Listener>(impl->ioc, std::move(acceptor));
     listener->run();
+    spdlog::info("Listenning on {}:{}", bind_addr, port);
 
     for (unsigned i = 0; i < nb_thr; ++i)
         impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
