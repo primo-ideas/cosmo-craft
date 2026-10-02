@@ -91,7 +91,7 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
 
     for (unsigned i = 0; i < nb_thr - 1; ++i)
         impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
-    impl->threads.emplace_back([&listener] { run_game(listener); });
+    // impl->threads.emplace_back([&listener] { run_game(listener); });
 
     impl->listener = listener;
     impl->port = impl->listener->acceptor().local_endpoint().port();
