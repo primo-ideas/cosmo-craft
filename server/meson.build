@@ -27,8 +27,8 @@ core = static_library(
   'core',
   files(
     'lib/instance.cpp',
-    'lib/transport.cpp',
-    'lib/logger.cpp'
+    'lib/net.cpp',
+    'lib/log.cpp'
   ),
   include_directories: ['lib', 'lib/include'],
   dependencies: [boost_headers, spdlog],

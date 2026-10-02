@@ -96,15 +96,27 @@ void init() {
         SetConsoleMode(out, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
     spdlog::set_pattern("[%5t] [%H:%M:%S] %v");
-    spdlog::cfg::load_env_levels();
-    // #ifdef _WIN32
-    //     auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
-    //     console_sink->set_color(spdlog::level::trace, );
-    // #else
-    //     auto console_sink =
-    //         std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>(spdlog::color_mode::automatic);
-    //     console_sink->set_color(spdlog::level::trace, "\033[90m");
-    // #endif
+    // Sink ANSI sur toutes les plateformes : le sink Windows natif ne sait pas
+    // afficher les couleurs 24 bits du thread_id.
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
+    sink->set_color(spdlog::level::trace, "\033[90m");      // gris
+    sink->set_color(spdlog::level::debug, "\033[32m");      // vert
+    sink->set_color(spdlog::level::info, "\033[37m");       // blanc
+    sink->set_color(spdlog::level::warn, "\033[33m");       // jaune
+    sink->set_color(spdlog::level::err, "\033[31m");        // rouge
+    sink->set_color(spdlog::level::critical, "\033[1;31m"); // rouge gras
+
+    // Même règle que le sink : pas de couleur hors d'un terminal.
+    bool color =
+        spdlog::details::os::in_terminal(stdout) && spdlog::details::os::is_color_terminal();
+
+    auto formatter = std::make_unique<spdlog::pattern_formatter>();
+    formatter->add_flag<thread_flag>('*', color).set_pattern("%*%^[%H:%M:%S.%e] %v%$");
+    sink->set_formatter(std::move(formatter));
+
+    // auto logger = std::make_shared<spdlog::logger>("cosmo", std::move(sink));
+    // logger.set_level(spdlog::level::trace);
+    // spdlog::set_default_logger(std::move(logger));
 }
 
 } // namespace log

@@ -23,7 +23,7 @@ int main(int ac, char **av) {
         return 1;
     }
 
-    cosmo::init_logger();
+    cosmo::log::init();
 
     auto bind_addr = vm["bind_addr"].as<std::string>();
     auto port = vm["port"].as<unsigned short>();

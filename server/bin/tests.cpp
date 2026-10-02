@@ -92,7 +92,7 @@ TEST(Instance, HundredHandshakes) {
 }
 
 int main(int argc, char **argv) {
-    cosmo::init_logger();
+    cosmo::log::init();
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
