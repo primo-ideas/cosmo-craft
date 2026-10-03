@@ -1,7 +1,6 @@
 #include "net.hpp"
 
 #include <cstdlib>
-#include <expected>
 #include <memory>
 #include <mutex>
 
@@ -95,14 +94,15 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
     do_read();
 }
 
-std::expected<std::string, Session::pop_message_error> Session::pop_message() {
+std::vector<std::string> Session::pop_messages() {
     std::lock_guard lock(read_mutex_);
-    if (to_read_.empty()) {
-        return std::unexpected(pop_message_error::no_message);
+    std::vector<std::string> messages;
+    while (!to_read_.empty()) {
+        auto front = to_read_.front();
+        messages.emplace_back(front);
+        to_read_.pop();
     }
-    auto front = to_read_.front();
-    to_read_.pop();
-    return front;
+    return messages;
 }
 
 void Session::push_message(std::string const &msg) {

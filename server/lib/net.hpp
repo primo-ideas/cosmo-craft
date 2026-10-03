@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <expected>
 #include <memory>
 #include <queue>
 
@@ -29,8 +28,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void do_read();
     void on_read(boost::beast::error_code ec, std::size_t bytes_transferred);
     void on_write(boost::beast::error_code ec, std::size_t bytes_transferred);
-    enum class pop_message_error { no_message };
-    std::expected<std::string, pop_message_error> pop_message();
+    std::vector<std::string> pop_messages();
     void push_message(std::string const &msg);
 };
 
