@@ -33,8 +33,8 @@ Game::Game(std::shared_ptr<Listener> listener)
     : listener_(listener) {
 }
 
-void cycle(std::shared_ptr<Listener> listener) {
-    auto sessions = listener->sessions();
+void Game::cycle() {
+    auto sessions = listener_->sessions();
 
     for (auto &session : sessions) {
         auto messages = session->pop_messages();
@@ -43,6 +43,7 @@ void cycle(std::shared_ptr<Listener> listener) {
                 auto maybe_auth = deserialize<ClientAuth>(msg);
                 if (!maybe_auth.has_value()) {
                     logger.trace("Serde error: {}", (int)maybe_auth.error());
+                    session->close(boost::beast::websocket::close_code::unknown_data);
                 }
             }
         }

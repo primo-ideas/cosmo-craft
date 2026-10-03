@@ -23,6 +23,7 @@ class Session : public std::enable_shared_from_this<Session> {
   public:
     explicit Session(boost::asio::ip::tcp::socket &&socket);
     void run();
+    void close(boost::beast::websocket::close_code);
     void on_close(boost::beast::error_code ec);
     void on_run();
     void on_accept(boost::beast::error_code ec);

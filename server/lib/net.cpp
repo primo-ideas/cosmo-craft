@@ -66,18 +66,17 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
     }
 
     if (!ws_.got_text()) {
-        ws_.async_close(boost::beast::websocket::close_reason(
-                            boost::beast::websocket::close_code::unknown_data),
-                        beast::bind_front_handler(&Session::on_close, shared_from_this()));
+        close(boost::beast::websocket::close_code::unknown_data);
     }
     auto buffer_str =
         std::string(static_cast<char const *>(buffer_.cdata().data()), buffer_.cdata().size());
     buffer_.consume(bytes_read);
-    // ws_.text(ws_.got_text());
-    // ws_.async_write(buffer_.data(),
-    //                 beast::bind_front_handler(&Session::on_write, shared_from_this()));
 }
 
+void Session::close(boost::beast::websocket::close_code code) {
+    ws_.async_close(boost::beast::websocket::close_reason(code),
+                    beast::bind_front_handler(&Session::on_close, shared_from_this()));
+}
 void Session::on_close(beast::error_code ec) {
     logger.trace("Closed");
 }

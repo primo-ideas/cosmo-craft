@@ -29,7 +29,8 @@ core = static_library(
   files(
     'lib/instance.cpp',
     'lib/net.cpp',
-    'lib/log.cpp'
+    'lib/log.cpp',
+    'lib/game.cpp'
   ),
   include_directories: ['lib', 'lib/include'],
   dependencies: [boost_headers, spdlog, json],
