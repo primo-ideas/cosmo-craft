@@ -1,3 +1,4 @@
+#include <chrono>
 #include <expected>
 #include <memory>
 #include <string>
@@ -28,9 +29,11 @@ struct Instance::Impl {
     std::shared_ptr<Listener> listener;
     std::vector<std::thread> threads;
     unsigned short port;
+    asio::steady_timer cycle_timer;
 
     explicit Impl(int concurrency)
-        : ioc(concurrency) {
+        : ioc(concurrency)
+        , cycle_timer(ioc) {
     }
     ~Impl() {
         ioc.stop();
@@ -40,6 +43,16 @@ struct Instance::Impl {
         for (auto &t : threads)
             if (t.joinable())
                 t.join();
+    }
+
+    void set_cycle_timer() {
+        cycle_timer.expires_after(std::chrono::milliseconds(100));
+        cycle_timer.async_wait(std::bind(&Instance::Impl::on_timer, this, std::placeholders::_1));
+    }
+
+    void on_timer(boost::system::error_code ec) {
+        cycle(listener);
+        set_cycle_timer();
     }
 };
 
@@ -89,9 +102,10 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
     listener->run();
     logger.info("Listenning on {}:{}", bind_addr, port);
 
+    impl->set_cycle_timer();
+
     for (unsigned i = 0; i < nb_thr - 1; ++i)
         impl->threads.emplace_back([&ioc = impl->ioc] { ioc.run(); });
-    // impl->threads.emplace_back([&listener] { run_game(listener); });
 
     impl->listener = listener;
     impl->port = impl->listener->acceptor().local_endpoint().port();

@@ -20,7 +20,8 @@ using tcp = boost::asio::ip::tcp;
 namespace cosmo {
 
 Session::Session(tcp::socket &&socket)
-    : ws_(std::move(socket)) {
+    : ws_(std::move(socket))
+    , authenticated_(false) {
 }
 
 void Session::run() {
@@ -109,6 +110,10 @@ void Session::push_message(std::string const &msg) {
     std::lock_guard lock(write_mutex_);
 
     to_write_.push(msg);
+}
+
+bool Session::authenticated() const {
+    return authenticated_;
 }
 
 Listener::Listener(asio::io_context &ioc, tcp::acceptor acceptor)

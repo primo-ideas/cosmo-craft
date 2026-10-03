@@ -18,6 +18,7 @@ class Session : public std::enable_shared_from_this<Session> {
     std::mutex read_mutex_;
     std::queue<std::string> to_write_;
     std::mutex write_mutex_;
+    bool authenticated_;
 
   public:
     explicit Session(boost::asio::ip::tcp::socket &&socket);
@@ -30,6 +31,7 @@ class Session : public std::enable_shared_from_this<Session> {
     void on_write(boost::beast::error_code ec, std::size_t bytes_transferred);
     std::vector<std::string> pop_messages();
     void push_message(std::string const &msg);
+    bool authenticated() const;
 };
 
 class Listener : public std::enable_shared_from_this<Listener> {

@@ -14,6 +14,6 @@ struct ClientAuth {
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ClientAuth, nickname)
 
-extern void run_game(std::shared_ptr<Listener> listener);
+extern void cycle(std::shared_ptr<Listener> listener);
 
 } // namespace cosmo
