@@ -3,9 +3,6 @@
 #include <expected>
 
 #include "log.hpp"
-#include "net.hpp"
-
-// namespace asio = boost::asio;
 
 using nlohmann::json;
 

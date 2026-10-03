@@ -1,6 +1,5 @@
 #include "listener.hpp"
 
-#include <cstdlib>
 #include <memory>
 #include <mutex>
 

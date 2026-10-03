@@ -1,5 +1,12 @@
 #include "session.hpp"
 
+#include "log.hpp"
+
+
+namespace beast = boost::beast;
+namespace asio = boost::asio;
+using tcp = boost::asio::ip::tcp;
+
 namespace cosmo {
 
 Session::Session(tcp::socket &&socket)
@@ -13,12 +20,13 @@ void Session::run() {
 }
 
 void Session::on_run() {
-    ws_.set_option(websocket::stream_base::timeout::suggested(beast::role_type::server));
+    ws_.set_option(beast::websocket::stream_base::timeout::suggested(beast::role_type::server));
 
-    ws_.set_option(websocket::stream_base::decorator([](websocket::response_type &res) {
-        res.set(http::field::server,
-                std::string(BOOST_BEAST_VERSION_STRING) + " websocket-server-async");
-    }));
+    ws_.set_option(
+        beast::websocket::stream_base::decorator([](beast::websocket::response_type &res) {
+            res.set(beast::http::field::server,
+                    std::string(BOOST_BEAST_VERSION_STRING) + " websocket-server-async");
+        }));
 
     ws_.async_accept(beast::bind_front_handler(&Session::on_accept, shared_from_this()));
 }
@@ -38,7 +46,7 @@ void Session::do_read() {
 
 void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
     logger.trace("READ ({} bytes)", bytes_read);
-    if (ec == websocket::error::closed) {
+    if (ec == beast::websocket::error::closed) {
         logger.debug("Connection closed");
         return;
     }
