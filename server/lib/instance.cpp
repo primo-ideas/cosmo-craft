@@ -30,6 +30,7 @@ struct Instance::Impl {
     std::vector<std::thread> threads;
     unsigned short port;
     asio::steady_timer cycle_timer;
+    std::function<void()> cycle_handler;
 
     explicit Impl(int concurrency)
         : ioc(concurrency)
@@ -45,13 +46,19 @@ struct Instance::Impl {
                 t.join();
     }
 
+    void set_cycle_handler(std::function<void()> func) {
+        cycle_handler = func;
+    }
+
     void set_cycle_timer() {
         cycle_timer.expires_after(std::chrono::milliseconds(100));
         cycle_timer.async_wait(std::bind(&Instance::Impl::on_timer, this, std::placeholders::_1));
     }
 
     void on_timer(boost::system::error_code ec) {
-        cycle(listener);
+        if (ec)
+            return;
+        cycle_handler();
         set_cycle_timer();
     }
 };
@@ -102,6 +109,8 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
     listener->run();
     logger.info("Listenning on {}:{}", bind_addr, port);
 
+    auto game = std::make_shared<Game>(listener);
+    impl->set_cycle_handler(std::bind(&Game::cycle, game));
     impl->set_cycle_timer();
 
     for (unsigned i = 0; i < nb_thr - 1; ++i)

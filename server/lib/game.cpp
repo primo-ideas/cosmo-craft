@@ -29,18 +29,20 @@ template <class T> std::expected<T, SerdeError> deserialize(std::string const &j
     }
 }
 
-void cycle(std::shared_ptr<Listener> listener) {
-    while (true) {
-        auto sessions = listener->sessions();
+Game::Game(std::shared_ptr<Listener> listener)
+    : listener_(listener) {
+}
 
-        for (auto &session : sessions) {
-            auto messages = session->pop_messages();
-            for (auto msg : messages) {
-                if (!session->authenticated()) {
-                    auto maybe_auth = deserialize<ClientAuth>(msg);
-                    if (!maybe_auth.has_value()) {
-                        logger.trace("Serde error: {}", maybe_auth.error());
-                    }
+void cycle(std::shared_ptr<Listener> listener) {
+    auto sessions = listener->sessions();
+
+    for (auto &session : sessions) {
+        auto messages = session->pop_messages();
+        for (auto msg : messages) {
+            if (!session->authenticated()) {
+                auto maybe_auth = deserialize<ClientAuth>(msg);
+                if (!maybe_auth.has_value()) {
+                    logger.trace("Serde error: {}", (int)maybe_auth.error());
                 }
             }
         }

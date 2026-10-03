@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <boost/asio/io_context.hpp>
 #include <nlohmann/json.hpp>
 
@@ -14,6 +16,14 @@ struct ClientAuth {
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ClientAuth, nickname)
 
-extern void cycle(std::shared_ptr<Listener> listener);
+class Game {
+  private:
+    std::shared_ptr<Listener> listener_;
+    std::vector<std::string> nicknames_;
+
+  public:
+    Game(std::shared_ptr<Listener> listener);
+    void cycle();
+};
 
 } // namespace cosmo
