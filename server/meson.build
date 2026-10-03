@@ -28,7 +28,8 @@ core = static_library(
   'core',
   files(
     'lib/instance.cpp',
-    'lib/net.cpp',
+    'lib/listener.cpp',
+    'lib/session.cpp',
     'lib/log.cpp',
     'lib/game.cpp'
   ),
