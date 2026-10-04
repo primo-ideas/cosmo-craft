@@ -56,11 +56,15 @@ void Session::on_read(beast::error_code ec, std::size_t bytes_read) {
 
     if (!ws_.got_text()) {
         close();
+        return;
     }
     auto buffer_str =
         std::string(static_cast<char const *>(buffer_.cdata().data()), buffer_.cdata().size());
     buffer_.consume(bytes_read);
+    read_mutex_.lock();
     to_read_.emplace(buffer_str);
+    read_mutex_.unlock();
+    do_read();
 }
 
 void Session::do_write() {
@@ -92,6 +96,7 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
 }
 
 void Session::close() {
+    closing_ = true;
     asio::post(ws_.get_executor(), [self = shared_from_this()] {
         if (self->closing_)
             return;
@@ -118,7 +123,7 @@ void Session::push_message(std::string const &msg) {
     asio::post(ws_.get_executor(), [self = shared_from_this(), msg = std::move(msg)]() mutable {
         if (self->closing_)
             return;
-        self->to_write_.push(std::move(msg));
+        self->to_write_.push(msg);
         if (!self->writing_)
             self->do_write();
     });

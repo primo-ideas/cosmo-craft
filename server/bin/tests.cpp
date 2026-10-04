@@ -48,7 +48,7 @@ class TestClient {
             return std::unexpected(ec);
         }
 
-        host += ':' + port;
+        host += ':' + port_str;
 
         ws.set_option(boost::beast::websocket::stream_base::decorator(
             [](boost::beast::websocket::request_type &req) {
