@@ -12,13 +12,21 @@
 #include <spdlog/spdlog.h>
 
 #include "core.hpp"
+#include "lib/game.hpp"
 
 class TestClient {
-    boost::asio::io_context &ioc_;
+    boost::beast::websocket::stream<boost::asio::ip::tcp::socket> ws_;
 
   private:
-    TestClient(boost::asio::io_context &ioc)
-        : ioc_(ioc) {
+    TestClient(boost::beast::websocket::stream<boost::asio::ip::tcp::socket> &&ws)
+        : ws_(std::move(ws)) {
+    }
+
+  public:
+    TestClient(TestClient &&) = default;
+
+    boost::beast::websocket::stream<boost::asio::ip::tcp::socket> &ws() {
+        return ws_;
     }
 
   public:
@@ -52,7 +60,7 @@ class TestClient {
         if (ec) {
             return std::unexpected(ec);
         }
-        return TestClient(ioc);
+        return TestClient(std::move(ws));
     }
 };
 
@@ -87,8 +95,15 @@ TEST(Instance, HundredHandshakes) {
     for (auto _ : std::ranges::views::iota(1, 100)) {
         auto maybe_client = TestClient::handshake(ioc, instance.port());
         ASSERT_TRUE(maybe_client) << maybe_client.error().message();
-        clients.emplace_back(maybe_client.value());
+        clients.emplace_back(std::move(maybe_client.value()));
     }
+}
+
+TEST(Instance, Authentication) {
+    auto instance = cosmo::Instance::launch().value();
+    auto ioc = boost::asio::io_context();
+    auto client = TestClient::handshake(ioc, instance.port()).value();
+    client.ws().write(serialize(cosmo::ClientAuth{"Player"}));
 }
 
 int main(int argc, char **argv) {

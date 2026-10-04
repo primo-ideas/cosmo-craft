@@ -3,33 +3,11 @@
 #include <expected>
 
 #include "log.hpp"
+#include "session.hpp"
 
 using nlohmann::json;
 
 namespace cosmo {
-
-enum class SerdeError {
-    InvalidJson,
-    InvalidInput,
-};
-
-template <class T> std::expected<T, SerdeError> deserialize(std::string const &json_str) {
-    auto parse_result = json::parse(json_str, nullptr, false);
-    if (parse_result.is_discarded()) {
-        return std::unexpected(SerdeError::InvalidJson);
-    }
-    try {
-        auto value = parse_result.get<T>();
-        return value;
-    } catch (...) {
-        return std::unexpected(SerdeError::InvalidInput);
-    }
-}
-
-template <class T> std::string serialize(T const &value) {
-    json json = value;
-    return json.dump();
-}
 
 Game::Game(std::shared_ptr<Listener> listener)
     : listener_(listener) {
@@ -48,12 +26,12 @@ void Game::cycle() {
                 if (!maybe_auth.has_value()) {
                     logger.trace("Serde error: {}", (int)maybe_auth.error());
                     response.result = false;
-                    session->close(boost::beast::websocket::close_code::unknown_data);
+                    session->close();
                 }
                 auto auth = maybe_auth.value();
                 if (nicknames_.find(auth.nickname) != nicknames_.end()) {
                     response.result = false;
-                    session->close(boost::beast::websocket::close_code::unknown_data);
+                    session->close();
                 }
                 auto response_str = serialize(response);
                 session->push_message(response_str);
