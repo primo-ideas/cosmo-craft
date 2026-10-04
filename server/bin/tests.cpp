@@ -104,9 +104,12 @@ TEST(Instance, Authentication) {
     auto ioc = boost::asio::io_context();
     auto client = TestClient::handshake(ioc, instance.port()).value();
     auto write_str = serialize(cosmo::ClientAuth{"Player"});
-    client.ws().write(boost::asio::buffer(write_str));
+    boost::system::error_code ec;
+    client.ws().write(boost::asio::buffer(write_str), ec);
+    ASSERT_FALSE(ec);
     boost::beast::flat_buffer buffer;
-    client.ws().read(buffer);
+    client.ws().read(buffer, ec);
+    ASSERT_FALSE(ec);
     auto read_str =
         std::string(static_cast<char const *>(buffer.cdata().data()), buffer.cdata().size());
     auto response = cosmo::deserialize<cosmo::AuthResponse>(read_str).value();
