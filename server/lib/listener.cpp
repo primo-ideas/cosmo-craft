@@ -44,7 +44,11 @@ void Listener::on_accept(beast::error_code ec, tcp::socket socket) {
         return;
     } else {
         logger.debug("New connection");
-        std::make_shared<Session>(std::move(socket))->run();
+        auto session = std::make_shared<Session>(std::move(socket));
+        session_mutex_.lock();
+        sessions_.push_back(session);
+        session_mutex_.unlock();
+        session->run();
     }
 
     do_accept();

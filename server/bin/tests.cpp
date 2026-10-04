@@ -103,7 +103,7 @@ TEST(Instance, Authentication) {
     auto instance = cosmo::Instance::launch().value();
     auto ioc = boost::asio::io_context();
     auto client = TestClient::handshake(ioc, instance.port()).value();
-    auto write_str = serialize(cosmo::ClientAuth{"Player"});
+    auto write_str = cosmo::serialize(cosmo::ClientAuth{"Player"});
     boost::system::error_code ec;
     client.ws().write(boost::asio::buffer(write_str), ec);
     ASSERT_FALSE(ec) << ec.message();
