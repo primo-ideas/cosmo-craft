@@ -33,6 +33,9 @@ void Game::cycle() {
                     if (nicknames_.find(auth.nickname) != nicknames_.end()) {
                         response.result = false;
                         response.message = "Player already has this nickname";
+                    } else {
+                        nicknames_.insert(auth.nickname);
+                        session->set_authenticated(true);
                     }
                 }
                 auto response_str = serialize(response);

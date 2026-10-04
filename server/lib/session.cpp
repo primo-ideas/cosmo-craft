@@ -96,10 +96,10 @@ void Session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
 }
 
 void Session::close() {
-    closing_ = true;
     asio::post(ws_.get_executor(), [self = shared_from_this()] {
         if (self->closing_)
             return;
+        self->closing_ = true;
         if (!self->writing_)
             self->do_write();
     });
@@ -131,6 +131,9 @@ void Session::push_message(std::string const &msg) {
 
 bool Session::authenticated() const {
     return authenticated_;
+}
+void Session::set_authenticated(bool val) {
+    authenticated_ = val;
 }
 
 } // namespace cosmo

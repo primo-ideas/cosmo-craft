@@ -29,6 +29,21 @@ class TestClient {
         return ws_;
     }
 
+    std::expected<cosmo::AuthResponse, std::error_code> authenticate(std::string const &nickname) {
+        auto write_str = cosmo::serialize(cosmo::ClientAuth{nickname});
+        boost::system::error_code ec;
+        ws_.write(boost::asio::buffer(write_str), ec);
+        if (ec)
+            return std::unexpected(ec);
+        boost::beast::flat_buffer buffer;
+        ws_.read(buffer, ec);
+        if (ec)
+            return std::unexpected(ec);
+        auto read_str =
+            std::string(static_cast<char const *>(buffer.cdata().data()), buffer.cdata().size());
+        return cosmo::deserialize<cosmo::AuthResponse>(read_str).value();
+    }
+
   public:
     static std::expected<TestClient, std::error_code> handshake(boost::asio::io_context &ioc,
                                                                 unsigned short port) {
@@ -99,21 +114,44 @@ TEST(Instance, HundredHandshakes) {
     }
 }
 
-TEST(Instance, Authentication) {
+TEST(Instance, SimpleAuthentication) {
     auto instance = cosmo::Instance::launch().value();
     auto ioc = boost::asio::io_context();
-    auto client = TestClient::handshake(ioc, instance.port()).value();
-    auto write_str = cosmo::serialize(cosmo::ClientAuth{"Player"});
-    boost::system::error_code ec;
-    client.ws().write(boost::asio::buffer(write_str), ec);
-    ASSERT_FALSE(ec) << ec.message();
-    boost::beast::flat_buffer buffer;
-    client.ws().read(buffer, ec);
-    ASSERT_FALSE(ec) << ec.message();
-    auto read_str =
-        std::string(static_cast<char const *>(buffer.cdata().data()), buffer.cdata().size());
-    auto response = cosmo::deserialize<cosmo::AuthResponse>(read_str).value();
+    auto client1 = TestClient::handshake(ioc, instance.port()).value();
+    auto maybe_response = client1.authenticate("Player1");
+    ASSERT_TRUE(maybe_response) << maybe_response.error();
+    auto response = maybe_response.value();
     ASSERT_TRUE(response.result);
+}
+
+TEST(Instance, DoubleAuthentication) {
+    auto instance = cosmo::Instance::launch().value();
+    auto ioc = boost::asio::io_context();
+    auto client1 = TestClient::handshake(ioc, instance.port()).value();
+    auto maybe_response = client1.authenticate("Player1");
+    ASSERT_TRUE(maybe_response) << maybe_response.error();
+    auto response = maybe_response.value();
+    ASSERT_TRUE(response.result);
+    auto client2 = TestClient::handshake(ioc, instance.port()).value();
+    maybe_response = client2.authenticate("Player2");
+    ASSERT_TRUE(maybe_response) << maybe_response.error();
+    response = maybe_response.value();
+    ASSERT_TRUE(response.result);
+}
+
+TEST(Instance, DoubleAuthenticationSameNickname) {
+    auto instance = cosmo::Instance::launch().value();
+    auto ioc = boost::asio::io_context();
+    auto client1 = TestClient::handshake(ioc, instance.port()).value();
+    auto maybe_response = client1.authenticate("Player1");
+    ASSERT_TRUE(maybe_response) << maybe_response.error();
+    auto response = maybe_response.value();
+    ASSERT_TRUE(response.result);
+    auto client2 = TestClient::handshake(ioc, instance.port()).value();
+    maybe_response = client2.authenticate("Player1");
+    ASSERT_TRUE(maybe_response) << maybe_response.error();
+    response = maybe_response.value();
+    ASSERT_FALSE(response.result);
 }
 
 int main(int argc, char **argv) {

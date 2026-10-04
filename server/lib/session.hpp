@@ -36,6 +36,7 @@ class Session : public std::enable_shared_from_this<Session> {
     std::vector<std::string> pop_messages();
     void push_message(std::string const &msg);
     bool authenticated() const;
+    void set_authenticated(bool val);
 };
 
 } // namespace cosmo
