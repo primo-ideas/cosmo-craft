@@ -106,10 +106,10 @@ TEST(Instance, Authentication) {
     auto write_str = serialize(cosmo::ClientAuth{"Player"});
     boost::system::error_code ec;
     client.ws().write(boost::asio::buffer(write_str), ec);
-    ASSERT_FALSE(ec);
+    ASSERT_FALSE(ec) << ec.message();
     boost::beast::flat_buffer buffer;
     client.ws().read(buffer, ec);
-    ASSERT_FALSE(ec);
+    ASSERT_FALSE(ec) << ec.message();
     auto read_str =
         std::string(static_cast<char const *>(buffer.cdata().data()), buffer.cdata().size());
     auto response = cosmo::deserialize<cosmo::AuthResponse>(read_str).value();
