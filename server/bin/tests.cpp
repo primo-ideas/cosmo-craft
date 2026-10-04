@@ -103,7 +103,14 @@ TEST(Instance, Authentication) {
     auto instance = cosmo::Instance::launch().value();
     auto ioc = boost::asio::io_context();
     auto client = TestClient::handshake(ioc, instance.port()).value();
-    client.ws().write(serialize(cosmo::ClientAuth{"Player"}));
+    auto write_str = serialize(cosmo::ClientAuth{"Player"});
+    client.ws().write(boost::asio::buffer(write_str));
+    boost::beast::flat_buffer buffer;
+    client.ws().read(buffer);
+    auto read_str =
+        std::string(static_cast<char const *>(buffer.cdata().data()), buffer.cdata().size());
+    auto response = cosmo::deserialize<cosmo::AuthResponse>(read_str).value();
+    ASSERT_TRUE(response.result);
 }
 
 int main(int argc, char **argv) {

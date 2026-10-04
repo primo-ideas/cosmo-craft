@@ -22,19 +22,22 @@ void Game::cycle() {
             if (!session->authenticated()) {
                 auto response = AuthResponse();
                 response.result = true;
+                response.message = "Welcome";
                 auto maybe_auth = deserialize<ClientAuth>(msg);
                 if (!maybe_auth.has_value()) {
                     logger.trace("Serde error: {}", (int)maybe_auth.error());
                     response.result = false;
-                    session->close();
+                    response.message = "Invalid data";
                 }
                 auto auth = maybe_auth.value();
                 if (nicknames_.find(auth.nickname) != nicknames_.end()) {
                     response.result = false;
-                    session->close();
+                    response.message = "Player already has this nickname";
                 }
                 auto response_str = serialize(response);
                 session->push_message(response_str);
+                if (!response.result)
+                    session->close();
             }
         }
     }
