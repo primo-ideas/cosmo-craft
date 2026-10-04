@@ -9,4 +9,5 @@ func _on_button_pressed() -> void:
 	var nickname = nickname_line_edit.text as String
 	if nickname.is_empty():
 		self.info_label.text = "Invalid nickname"
+		return
 	net.connect_to_server(nickname)
