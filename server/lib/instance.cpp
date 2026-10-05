@@ -13,11 +13,10 @@
 #include <boost/beast/websocket.hpp>
 #include <spdlog/spdlog.h>
 
-#include "core.hpp"
+#include "cosmo.hpp"
 #include "game.hpp"
 #include "listener.hpp"
 #include "log.hpp"
-
 
 namespace beast = boost::beast;
 namespace asio = boost::asio;
@@ -106,9 +105,10 @@ std::expected<Instance, std::error_code> Instance::launch(unsigned short port,
     if (acceptor.listen(asio::socket_base::max_listen_connections, ec))
         return std::unexpected(ec);
 
+    logger.info("Listening on {}:{}", bind_addr, acceptor.local_endpoint().port());
+
     auto listener = std::make_shared<Listener>(impl->ioc, std::move(acceptor));
     listener->run();
-    logger.info("Listenning on {}:{}", bind_addr, port);
 
     auto game = std::make_shared<Game>(listener);
     impl->set_cycle_handler(std::bind(&Game::cycle, game));

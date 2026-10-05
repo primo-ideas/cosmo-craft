@@ -31,7 +31,8 @@ core = static_library(
     'lib/listener.cpp',
     'lib/session.cpp',
     'lib/log.cpp',
-    'lib/game.cpp'
+    'lib/game.cpp',
+    'lib/protocol.cpp'
   ),
   include_directories: ['lib', 'lib/include'],
   dependencies: [boost_headers, spdlog, json],

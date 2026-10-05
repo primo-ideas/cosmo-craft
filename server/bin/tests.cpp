@@ -11,8 +11,7 @@
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
-#include "core.hpp"
-#include "lib/game.hpp"
+#include "cosmo.hpp"
 
 class TestClient {
     boost::beast::websocket::stream<boost::asio::ip::tcp::socket> ws_;

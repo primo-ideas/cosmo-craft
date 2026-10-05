@@ -1,7 +1,6 @@
 #include "game.hpp"
 
-#include <expected>
-
+#include "cosmo.hpp"
 #include "log.hpp"
 #include "session.hpp"
 

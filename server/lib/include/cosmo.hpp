@@ -7,6 +7,24 @@
 
 namespace cosmo {
 
+struct ClientAuth {
+    std::string nickname;
+};
+
+struct AuthResponse {
+    bool result;
+    std::string message;
+};
+
+enum class SerdeError {
+    InvalidJson,
+    InvalidInput,
+};
+
+template <class T> std::expected<T, SerdeError> deserialize(std::string const &json_str);
+
+template <class T> std::string serialize(T const &value);
+
 class Instance {
   private:
     struct Impl;

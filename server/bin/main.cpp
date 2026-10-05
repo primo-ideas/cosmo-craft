@@ -3,7 +3,7 @@
 #include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
 
-#include "core.hpp"
+#include "cosmo.hpp"
 
 namespace po = boost::program_options;
 using namespace std;
