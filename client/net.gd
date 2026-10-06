@@ -31,7 +31,7 @@ func _process(_delta):
 	if state == WebSocketPeer.STATE_OPEN:
 		if net_state == NetState.AUTHENTICATING:
 			socket.send_text(JSON.stringify({
-				"nickname": self.nickname
+				"nickname": self.player_nickname
 			}))
 			net_state = NetState.AUTHENTICATING_WAIT_RESPONSE
 		elif net_state == NetState.AUTHENTICATING_WAIT_RESPONSE:
@@ -45,7 +45,7 @@ func _process(_delta):
 			var packet_text = packet.get_string_from_utf8()
 			var data = JSON.parse_string(packet_text)
 			if data["result"] == false:
-				ui.info_label.text = "Server declined authentication: " % [data["message"]]
+				ui.info_label.text = "Server declined authentication: %s" % [data["message"]]
 				socket.close()
 				return
 
