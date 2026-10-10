@@ -3,7 +3,10 @@
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 
+#include <cassert>
+
 #include "physics.hpp"
+
 
 using namespace JPH;
 using namespace JPH::literals;
@@ -19,6 +22,7 @@ DummyBlock::DummyBlock(BodyInterface &body_interface, int x, int y, int z) {
                                                    Quat::sIdentity(), EMotionType::Static,
                                                    Layers::NON_MOVING);
     Body                      *block = body_interface.CreateBody(block_body_settings);
+    assert(block);
     body_interface.AddBody(block->GetID(), EActivation::DontActivate);
     physics_body_ = block->GetID();
 }
