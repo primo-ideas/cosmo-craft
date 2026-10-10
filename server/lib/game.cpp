@@ -21,6 +21,7 @@
 #include "cosmo.hpp"
 #include "player.hpp"
 #include "session.hpp"
+#include "voxel.hpp"
 
 using nlohmann::json;
 using namespace JPH;
@@ -68,9 +69,18 @@ void Game::handle_in_sessions() {
                 } else {
                     auto spawn_x = rand_spawn(rand_gen_);
                     auto spawn_y = rand_spawn(rand_gen_);
+                    auto spawn_z = rand_spawn(rand_gen_);
 
-                    players_[auth.nickname] =
-                        std::make_shared<Player>(physics_.get_body_interface(), in_session);
+                    for (int i = -50; i < 50; ++i)
+                        for (int j = -50; j < 50; ++j) {
+                            auto floor_block =
+                                new DummyBlock(physics_.get_body_interface(), spawn_x + i,
+                                               spawn_y - 1, spawn_z + j);
+                            voxels_.push_back(floor_block);
+                        }
+
+                    players_[auth.nickname] = std::make_shared<Player>(
+                        physics_.get_body_interface(), spawn_x, spawn_y, spawn_z, in_session);
                     to_remove.push_back(in_session);
                 }
             }

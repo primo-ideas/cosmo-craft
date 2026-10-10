@@ -15,7 +15,8 @@ using namespace JPH::literals;
 
 namespace cosmo {
 
-Player::Player(BodyInterface &body_interface, std::shared_ptr<Session> session)
+Player::Player(BodyInterface &body_interface, int pos_x, int pos_y, int pos_z,
+               std::shared_ptr<Session> session)
     : session_(session)
     , waiting_for_action_(false)
     , dir_x_(0)
@@ -24,7 +25,7 @@ Player::Player(BodyInterface &body_interface, std::shared_ptr<Session> session)
     , moving_(false) {
 
     BodyCreationSettings player_capsule_settings(new CapsuleShape(1.f, 0.1),
-                                                 RVec3(0.0_r, 2.0_r, 0.0_r), Quat::sIdentity(),
+                                                 RVec3(pos_x, pos_y, pos_z), Quat::sIdentity(),
                                                  EMotionType::Dynamic, Layers::MOVING);
     player_capsule_id_ =
         body_interface.CreateAndAddBody(player_capsule_settings, EActivation::Activate);

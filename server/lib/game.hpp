@@ -18,6 +18,7 @@
 
 #include "cosmo.hpp"
 #include "physics.hpp"
+#include "voxel.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <nlohmann/json.hpp>
@@ -42,6 +43,7 @@ class Game : public std::enable_shared_from_this<Game> {
     std::random_device                             rand_seed_;
     std::mt19937                                   rand_gen_;
     std::uniform_int_distribution<>                rand_spawn;
+    std::vector<Voxel *>                           voxels_;
 
   public:
     Game();
