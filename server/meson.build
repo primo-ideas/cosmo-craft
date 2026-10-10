@@ -11,6 +11,11 @@ if host_machine.system() == 'windows'
     'cpp_std=c++latest'
   ]
   default_cpp_args = ['/bigobj', '-D_WIN32_WINNT=_WIN32_WINNT_WIN10']
+elif host_machine.system() == 'linux'
+  default_options = [
+    'cpp_std=c++2c'
+  ]
+  default_cpp_args = []
 else
   default_options = [
     'cpp_std=c++26'

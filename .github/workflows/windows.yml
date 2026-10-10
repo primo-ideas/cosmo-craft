@@ -20,21 +20,20 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Boost
-        id: install-boost
-        uses: MarkusJx/install-boost@v2
-        if: runner.os == 'Windows'
-        with:
-          boost_version: 1.92.0
-          platform_version: 2025
-          toolset: msvc
-          link: static
+      # - name: Boost
+      #   id: install-boost
+      #   uses: MarkusJx/install-boost@v2
+      #   if: runner.os == 'Windows'
+      #   with:
+      #     boost_version: 1.92.0
+      #     platform_version: 2025
+      #     toolset: msvc
+      #     link: static
 
       - run: |
           meson setup build
           meson compile -C build
-          meson test -C build --print-errorlogs
+          meson test -C build
         working-directory: ./server
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-
+        # env:
+        #   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
