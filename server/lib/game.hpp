@@ -41,19 +41,20 @@ class Game : public std::enable_shared_from_this<Game> {
     std::vector<std::shared_ptr<Session>>          in_sessions_;
     std::mutex                                     sessions_mutex_;
     Physics                                        physics_;
-    std::random_device                             rand_seed_;
-    std::mt19937                                   rand_gen_;
-    std::uniform_int_distribution<>                rand_spawn;
     std::vector<Voxel *>                           voxels_;
 
   public:
     Game();
-    void                                             clean_sessions();
-    void                                             handle_in_sessions();
-    void                                             handle_actions();
-    void                                             handle_physics();
+    void clean_sessions();
+    void handle_in_sessions();
+    void handle_actions();
+    void handle_physics();
+    void post_update();
+    void sync();
+    void cycle();
+
     std::expected<AuthResponse, AuthenticationError> authentication(std::string const &auth);
-    void                                             cycle();
+
     void read_messages(std::vector<std::shared_ptr<Session>>  sessions,
                        std::vector<std::shared_ptr<Session>> &sessions_to_remove);
     void new_session(std::shared_ptr<Session>);

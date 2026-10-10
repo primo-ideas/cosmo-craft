@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <system_error>
+#include <vector>
 
 namespace cosmo {
 
@@ -28,6 +29,30 @@ struct ActionMove {
 struct AuthResponse {
     bool        result  = true;
     std::string message = "Welcome";
+};
+
+struct VoxelState {
+    int id;
+    int kind;
+    int pos_x;
+    int pos_y;
+    int pos_z;
+};
+
+struct PlayerState {
+    int id;
+    int pos_x;
+    int pos_y;
+    int pos_z;
+    int dir_x;
+    int dir_y;
+    int dir_z;
+};
+
+struct WorldState {
+    std::vector<VoxelState>  voxels;
+    std::vector<PlayerState> players;
+    PlayerState              player;
 };
 
 enum class SerdeError {

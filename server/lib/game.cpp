@@ -20,8 +20,10 @@
 
 #include "cosmo.hpp"
 #include "player.hpp"
+#include "rand.hpp"
 #include "session.hpp"
 #include "voxel.hpp"
+
 
 using nlohmann::json;
 using namespace JPH;
@@ -29,9 +31,7 @@ using namespace JPH::literals;
 
 namespace cosmo {
 
-Game::Game()
-    : rand_gen_(rand_seed_())
-    , rand_spawn(-1000, 1000) {
+Game::Game() {
 }
 
 void Game::clean_sessions() {
@@ -67,9 +67,9 @@ void Game::handle_in_sessions() {
                 if (is_player_online(auth.nickname)) {
                     response = AuthResponse{false, "Player already has this nickname"};
                 } else {
-                    auto spawn_x = rand_spawn(rand_gen_);
-                    auto spawn_y = rand_spawn(rand_gen_);
-                    auto spawn_z = rand_spawn(rand_gen_);
+                    auto spawn_x = rand_spawn(rand_gen);
+                    auto spawn_y = rand_spawn(rand_gen);
+                    auto spawn_z = rand_spawn(rand_gen);
 
                     for (int i = -5; i < 5; ++i)
                         for (int j = -5; j < 5; ++j) {
@@ -122,7 +122,7 @@ void Game::handle_actions() {
                         break;
                     }
                     auto move = maybe_move.value();
-                    player->prepare_move(move.dir_x, move.dir_y, move.dir_z);
+                    player->move(physics_.get_body_interface(), move.dir_x, move.dir_y, move.dir_z);
                 } else {
                     session->close();
                     break;
@@ -136,11 +136,26 @@ void Game::handle_physics() {
     physics_.step();
 }
 
+void Game::post_update() {
+    for (auto pair : players_) {
+        auto player = pair.second;
+        player->stop(physics_.get_body_interface());
+    }
+}
+
+void Game::sync() {
+    for (auto pair : players_) {
+        auto session = pair.second->session();
+    }
+}
+
 void Game::cycle() {
     clean_sessions();
     handle_in_sessions();
     handle_actions();
     handle_physics();
+    post_update();
+    sync();
 }
 
 void Game::new_session(std::shared_ptr<Session> session) {

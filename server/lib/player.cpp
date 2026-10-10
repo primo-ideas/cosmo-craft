@@ -19,9 +19,6 @@ Player::Player(BodyInterface &body_interface, int pos_x, int pos_y, int pos_z,
                std::shared_ptr<Session> session)
     : session_(session)
     , waiting_for_action_(false)
-    , dir_x_(0)
-    , dir_y_(0)
-    , dir_z_(-1)
     , moving_(false) {
 
     BodyCreationSettings player_capsule_settings(new CapsuleShape(1.f, 0.1),
@@ -54,16 +51,12 @@ bool Player::is_waiting_for_action() const {
     return waiting_for_action_;
 }
 
-void Player::prepare_move(float dir_x, float dir_y, float dir_z) {
-    dir_x_  = dir_x;
-    dir_y_  = dir_y;
-    dir_z_  = dir_z;
-    moving_ = true;
+void Player::move(JPH::BodyInterface &body_interface, float dir_x, float dir_y, float dir_z) {
+    body_interface.SetLinearVelocity(player_capsule_id_, Vec3Arg(dir_x, dir_y, dir_z));
 }
 
-void Player::move(float delta) {
-
-    moving_ = false;
+void Player::stop(JPH::BodyInterface &body_interface) {
+    body_interface.SetLinearVelocity(player_capsule_id_, Vec3Arg());
 }
 
 } // namespace cosmo
