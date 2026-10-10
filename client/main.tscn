@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://btnnbkx36nh0h"]
+
+[ext_resource type="Script" uid="uid://ci1n8gjpwjguk" path="res://net.gd" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://cpdg51xhgo7r7" path="res://root.gd" id="1_h2yge"]
+[ext_resource type="Script" uid="uid://c5w3dmbe3c062" path="res://ui.gd" id="2_0xm2m"]
+
+[node name="Root" type="Node3D" unique_id=1954863511 groups=["root"]]
+script = ExtResource("1_h2yge")
+
+[node name="Net" type="Node" parent="." unique_id=1103981767]
+script = ExtResource("1_0xm2m")
+
+[node name="UI" type="Control" parent="." unique_id=1808714608]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_0xm2m")
+
+[node name="InfoLabel" type="Label" parent="UI" unique_id=1028217022]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "InfoLabel"
+
+[node name="CenterContainer" type="CenterContainer" parent="UI" unique_id=1732023766]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/CenterContainer" unique_id=1076246468]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/CenterContainer/PanelContainer" unique_id=922025883]
+layout_mode = 2
+
+[node name="NicknameLabel" type="Label" parent="UI/CenterContainer/PanelContainer/HBoxContainer" unique_id=235547345]
+layout_mode = 2
+text = "Nickname"
+
+[node name="NicknameLineEdit" type="LineEdit" parent="UI/CenterContainer/PanelContainer/HBoxContainer" unique_id=736864940]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Player"
+
+[node name="Button" type="Button" parent="UI/CenterContainer/PanelContainer/HBoxContainer" unique_id=900094184]
+layout_mode = 2
+text = "Connect"
+
+[connection signal="pressed" from="UI/CenterContainer/PanelContainer/HBoxContainer/Button" to="UI" method="_on_button_pressed"]

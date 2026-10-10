@@ -1,0 +1,21 @@
+# By Claude Opus
+
+# Mirrors the ABI-relevant options of Jolt's Build/CMakeLists.txt.
+# Override from the parent project with -Djolt:<option>=<value>.
+
+option('double_precision', type : 'boolean', value : false,
+  description : 'Use double precision math (JPH_DOUBLE_PRECISION)')
+option('cross_platform_deterministic', type : 'boolean', value : false,
+  description : 'Cross platform deterministic simulation (JPH_CROSS_PLATFORM_DETERMINISTIC)')
+option('asserts', type : 'boolean', value : false,
+  description : 'Enable asserts (JPH_ENABLE_ASSERTS)')
+option('debug_renderer', type : 'boolean', value : false,
+  description : 'Enable the debug renderer (JPH_DEBUG_RENDERER)')
+option('profiler', type : 'boolean', value : false,
+  description : 'Enable the profiler (JPH_PROFILE_ENABLED)')
+option('object_stream', type : 'boolean', value : true,
+  description : 'Compile the ObjectStream class and RTTI attribute information (JPH_OBJECT_STREAM)')
+option('object_layer_bits', type : 'combo', choices : ['16', '32'], value : '16',
+  description : 'Number of bits in ObjectLayer (JPH_OBJECT_LAYER_BITS)')
+option('simd', type : 'combo', choices : ['sse2', 'sse4.2', 'avx2'], value : 'avx2',
+  description : 'x86 instruction set level, ignored on other CPUs')

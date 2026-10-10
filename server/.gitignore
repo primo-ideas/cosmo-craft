@@ -1,0 +1,6 @@
+/build
+/.cache
+/subprojects/*/
+!/subprojects/packagefiles/
+/subprojects/.wraplock
+/native/*.ini

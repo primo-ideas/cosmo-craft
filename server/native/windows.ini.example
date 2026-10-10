@@ -1,0 +1,4 @@
+[properties]
+boost_root = 'C:/users/username/.local/lib/boost'
+[built-in options]
+cmake_prefix_path = ['C:/users/username/.local/lib/jolt']

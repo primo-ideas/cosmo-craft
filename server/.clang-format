@@ -1,0 +1,31 @@
+BasedOnStyle: LLVM
+Language: Cpp
+IndentWidth: 4
+ColumnLimit: 100
+InsertNewlineAtEOF: True
+WrapNamespaceBodyWithEmptyLines: Always
+AllowShortFunctionsOnASingleLine: None
+BreakConstructorInitializers: BeforeComma
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveMacros: Consecutive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<Windows.h>$'
+    Priority:        1
+    SortPriority:    1
+  - Regex:           '^<[^/.]+.h>$'
+    Priority:        1
+    SortPriority:    2
+  - Regex:           '^\<[^/]+\>$'
+    Priority:        2
+  - Regex:           '^\<[^/]+/[^.]+\>$'
+    Priority:        3
+  - Regex:           '^\<Jolt/Jolt.h\>$'
+    Priority:        4
+    SortPriority:    1
+  - Regex:           '^\<Jolt/.+\>$'
+    Priority:        4
+    SortPriority:    2
+  - Regex:           '^".+"$'
+    Priority:        5

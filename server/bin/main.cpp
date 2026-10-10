@@ -1,0 +1,34 @@
+#include <iostream>
+
+#include <boost/asio/signal_set.hpp>
+#include <boost/program_options.hpp>
+
+#include "cosmo.hpp"
+
+namespace po = boost::program_options;
+using namespace std;
+
+int main(int ac, char **av) {
+    po::options_description desc("Usage: cosmocraft-server");
+    desc.add_options()("help", "show this help")(
+        "bind_addr", po::value<std::string>()->default_value("127.0.0.1"))(
+        "port", po::value<unsigned short>()->default_value(8080));
+
+    po::variables_map vm;
+    po::store(po::parse_command_line(ac, av, desc), vm);
+    po::notify(vm);
+
+    if (vm.count("help")) {
+        cout << desc << "\n";
+        return 1;
+    }
+
+    cosmo::init_logger();
+
+    auto bind_addr = vm["bind_addr"].as<std::string>();
+    auto port      = vm["port"].as<unsigned short>();
+
+    auto instance = cosmo::Instance::launch(port, bind_addr);
+
+    instance->wait();
+}

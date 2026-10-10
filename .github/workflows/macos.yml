@@ -1,0 +1,37 @@
+name: MacOS
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/macos.yml'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - run: pip install meson ninja
+
+      - name: Boost
+        id: install-boost
+        uses: MarkusJx/install-boost@v2
+        with:
+          boost_version: 1.92.0
+          platform_version: 26
+          toolset: clang
+          link: static+shared
+          arch: aarch64
+
+      - run: |
+          meson setup build
+          meson compile -C build
+          meson test -C build --print-errorlogs
+        working-directory: ./server
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}

@@ -1,0 +1,40 @@
+name: Windows
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/windows.yml'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - run: pip install meson ninja
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Boost
+        id: install-boost
+        uses: MarkusJx/install-boost@v2
+        if: runner.os == 'Windows'
+        with:
+          boost_version: 1.92.0
+          platform_version: 2025
+          toolset: msvc
+          link: static
+
+      - run: |
+          meson setup build
+          meson compile -C build
+          meson test -C build --print-errorlogs
+        working-directory: ./server
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
