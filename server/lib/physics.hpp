@@ -12,8 +12,6 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/RegisterTypes.h>
 
-#include <iostream>
-
 #include "Jolt/Physics/Body/BodyInterface.h"
 
 namespace cosmo {
