@@ -74,46 +74,11 @@ Physics::Physics() {
     const uint cMaxBodyPairs          = 1024;
     const uint cMaxContactConstraints = 1024;
 
-    // BPLayerInterfaceImpl              broad_phase_layer_interface;
-    // ObjectVsBroadPhaseLayerFilterImpl object_vs_broadphase_layer_filter;
-    // ObjectLayerPairFilterImpl         object_vs_object_layer_filter;
-
     physics_system_.Init(cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints,
-                         broad_phase_layer_interface, object_vs_broadphase_layer_filter,
-                         object_vs_object_layer_filter);
-
-    // MyBodyActivationListener body_activation_listener;
-    physics_system_.SetBodyActivationListener(&body_activation_listener);
-
-    // MyContactListener contact_listener;
-    physics_system_.SetContactListener(&contact_listener);
-
-    // BodyInterface &body_interface = physics_system_.GetBodyInterface();
-
-    // BoxShapeSettings floor_shape_settings(Vec3(100.0f, 1.0f, 100.0f));
-    // floor_shape_settings.SetEmbedded();
-
-    // ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
-    // ShapeRefC                  floor_shape        = floor_shape_result.Get();
-
-    // BodyCreationSettings floor_settings(floor_shape, RVec3(0.0_r, -1.0_r, 0.0_r),
-    // Quat::sIdentity(),
-    //                                     EMotionType::Static, Layers::NON_MOVING);
-
-    // Body *floor = body_interface.CreateBody(floor_settings);
-
-    // body_interface.AddBody(floor->GetID(), EActivation::DontActivate);
-
-    // BodyCreationSettings sphere_settings(new SphereShape(0.5f), RVec3(0.0_r, 2.0_r, 0.0_r),
-    //                                      Quat::sIdentity(), EMotionType::Dynamic,
-    //                                      Layers::MOVING);
-    // BodyID sphere_id = body_interface.CreateAndAddBody(sphere_settings, EActivation::Activate);
-
-    // body_interface.SetLinearVelocity(sphere_id, Vec3(0.0f, -5.0f, 0.0f));
-
-    // const float cDeltaTime = 1.0f / 60.0f;
-
-    // physics_system_.OptimizeBroadPhase();
+                         broad_phase_layer_interface_, object_vs_broadphase_layer_filter_,
+                         object_vs_object_layer_filter_);
+    physics_system_.SetBodyActivationListener(&body_activation_listener_);
+    physics_system_.SetContactListener(&contact_listener_);
 }
 
 Physics::~Physics() {
@@ -130,22 +95,11 @@ Physics::~Physics() {
     Factory::sInstance = nullptr;
 }
 void Physics::step() {
-
-    // uint step = 0;
-    // while (body_interface.IsActive(sphere_id)) {
-    //     ++step;
-
-    //     RVec3 position = body_interface.GetCenterOfMassPosition(sphere_id);
-    //     Vec3  velocity = body_interface.GetLinearVelocity(sphere_id);
-    //     // cout << "Step " << step << ": Position = (" << position.GetX() << ", " <<
-    //     position.GetY()
-    //     //      << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", "
-    //     //      << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
-
-    //     const int cCollisionSteps = 1;
-
     physics_system_.Update(1. / 10, 1, &*temp_allocator_, &*job_system_);
-    // }
+}
+
+JPH::BodyInterface &Physics::get_body_interface() {
+    return physics_system_.GetBodyInterface();
 }
 
 } // namespace cosmo

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Jolt/Jolt.h>
+#include <Jolt/Physics/Body/BodyInterface.h>
+
 #include <memory>
 
 #include "session.hpp"
@@ -15,9 +18,10 @@ class Player {
     float                    dir_y_;
     float                    dir_z_;
     bool                     moving_;
+    JPH::BodyID              player_capsule_id_;
 
   public:
-    Player(std::shared_ptr<Session> session);
+    Player(JPH::BodyInterface &body_interface, std::shared_ptr<Session> session);
 
     bool                     is_closing() const;
     std::shared_ptr<Session> session();

@@ -23,8 +23,15 @@
 #include "session.hpp"
 
 using nlohmann::json;
+using namespace JPH;
+using namespace JPH::literals;
 
 namespace cosmo {
+
+Game::Game()
+    : rand_gen_(rand_seed_)
+    , rand_spawn(-1000, 1000) {
+}
 
 void Game::clean_sessions() {
     {
@@ -59,7 +66,11 @@ void Game::handle_in_sessions() {
                 if (is_player_online(auth.nickname)) {
                     response = AuthResponse{false, "Player already has this nickname"};
                 } else {
-                    players_[auth.nickname] = std::make_shared<Player>(in_session);
+                    auto spawn_x = rand_spawn(rand_gen_);
+                    auto spawn_y = rand_spawn(rand_gen_);
+
+                    players_[auth.nickname] =
+                        std::make_shared<Player>(physics_.get_body_interface(), in_session);
                     to_remove.push_back(in_session);
                 }
             }
@@ -68,8 +79,8 @@ void Game::handle_in_sessions() {
         in_session->push_message(response_str);
         if (!response.result) {
             in_session->close();
-        }
-        in_session->set_authenticated();
+        } else
+            in_session->set_authenticated();
     }
 
     for (auto in_session_to_remove : to_remove)

@@ -14,6 +14,8 @@
 
 #include <iostream>
 
+#include "Jolt/Physics/Body/BodyInterface.h"
+
 namespace cosmo {
 
 namespace Layers {
@@ -144,23 +146,17 @@ class Physics {
     std::unique_ptr<JPH::TempAllocatorImpl>   temp_allocator_;
     std::unique_ptr<JPH::JobSystemThreadPool> job_system_;
     JPH::PhysicsSystem                        physics_system_;
-    BPLayerInterfaceImpl                      broad_phase_layer_interface;
-    ObjectVsBroadPhaseLayerFilterImpl         object_vs_broadphase_layer_filter;
-    ObjectLayerPairFilterImpl                 object_vs_object_layer_filter;
-
-    // physics_system_.Init(cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints,
-    //                      broad_phase_layer_interface, object_vs_broadphase_layer_filter,
-    //                      object_vs_object_layer_filter);
-
-    MyBodyActivationListener body_activation_listener;
-    // physics_system_.SetBodyActivationListener(&body_activation_listener);
-
-    MyContactListener contact_listener;
+    BPLayerInterfaceImpl                      broad_phase_layer_interface_;
+    ObjectVsBroadPhaseLayerFilterImpl         object_vs_broadphase_layer_filter_;
+    ObjectLayerPairFilterImpl                 object_vs_object_layer_filter_;
+    MyBodyActivationListener                  body_activation_listener_;
+    MyContactListener                         contact_listener_;
 
   public:
     Physics();
     ~Physics();
-    void step();
+    void                step();
+    JPH::BodyInterface &get_body_interface();
 };
 
 } // namespace cosmo

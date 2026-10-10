@@ -39,8 +39,12 @@ class Game : public std::enable_shared_from_this<Game> {
     std::vector<std::shared_ptr<Session>>          in_sessions_;
     std::mutex                                     sessions_mutex_;
     Physics                                        physics_;
+    std::random_device                             rand_seed_;
+    std::mt19937                                   rand_gen_;
+    std::uniform_int_distribution<>                rand_spawn;
 
   public:
+    Game();
     void                                             clean_sessions();
     void                                             handle_in_sessions();
     void                                             handle_actions();
