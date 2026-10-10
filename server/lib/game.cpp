@@ -71,8 +71,8 @@ void Game::handle_in_sessions() {
                     auto spawn_y = rand_spawn(rand_gen_);
                     auto spawn_z = rand_spawn(rand_gen_);
 
-                    for (int i = -50; i < 50; ++i)
-                        for (int j = -50; j < 50; ++j) {
+                    for (int i = -5; i < 5; ++i)
+                        for (int j = -5; j < 5; ++j) {
                             auto floor_block =
                                 new DummyBlock(physics_.get_body_interface(), spawn_x + i,
                                                spawn_y - 1, spawn_z + j);

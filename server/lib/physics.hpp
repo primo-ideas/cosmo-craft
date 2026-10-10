@@ -107,7 +107,7 @@ class MyContactListener : public JPH::ContactListener {
     OnContactValidate(const JPH::Body &inBody1, const JPH::Body &inBody2,
                       JPH::RVec3Arg                  inBaseOffset,
                       const JPH::CollideShapeResult &inCollisionResult) override {
-        std::cout << "Contact validate callback" << std::endl;
+        // std::cout << "Contact validate callback" << std::endl;
 
         return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
     }
@@ -115,29 +115,29 @@ class MyContactListener : public JPH::ContactListener {
     virtual void OnContactAdded(const JPH::Body &inBody1, const JPH::Body &inBody2,
                                 const JPH::ContactManifold &inManifold,
                                 JPH::ContactSettings       &ioSettings) override {
-        std::cout << "A contact was added" << std::endl;
+        // std::cout << "A contact was added" << std::endl;
     }
 
     virtual void OnContactPersisted(const JPH::Body &inBody1, const JPH::Body &inBody2,
                                     const JPH::ContactManifold &inManifold,
                                     JPH::ContactSettings       &ioSettings) override {
-        std::cout << "A contact was persisted" << std::endl;
+        // std::cout << "A contact was persisted" << std::endl;
     }
 
     virtual void OnContactRemoved(const JPH::SubShapeIDPair &inSubShapePair) override {
-        std::cout << "A contact was removed" << std::endl;
+        // std::cout << "A contact was removed" << std::endl;
     }
 };
 
 class MyBodyActivationListener : public JPH::BodyActivationListener {
   public:
     virtual void OnBodyActivated(const JPH::BodyID &inBodyID, JPH::uint64 inBodyUserData) override {
-        std::cout << "A body got activated" << std::endl;
+        // std::cout << "A body got activated" << std::endl;
     }
 
     virtual void OnBodyDeactivated(const JPH::BodyID &inBodyID,
                                    JPH::uint64        inBodyUserData) override {
-        std::cout << "A body went to sleep" << std::endl;
+        // std::cout << "A body went to sleep" << std::endl;
     }
 };
 
