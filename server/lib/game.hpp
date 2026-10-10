@@ -15,6 +15,7 @@
 #include <expected>
 #include <map>
 #include <memory>
+#include <random>
 
 #include "cosmo.hpp"
 #include "physics.hpp"

@@ -30,7 +30,7 @@ using namespace JPH::literals;
 namespace cosmo {
 
 Game::Game()
-    : rand_gen_(rand_seed_)
+    : rand_gen_(rand_seed_())
     , rand_spawn(-1000, 1000) {
 }
 

@@ -44,6 +44,7 @@ core = static_library(
     'lib/protocol.cpp',
     'lib/physics.cpp',
     'lib/player.cpp',
+    'lib/voxel.cpp',
   ),
   include_directories: ['lib', 'lib/include'],
   dependencies: [boost_headers, spdlog, json, jolt],

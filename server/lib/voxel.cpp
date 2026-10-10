@@ -15,8 +15,9 @@ DummyBlock::DummyBlock(BodyInterface &body_interface, int x, int y, int z) {
     // box_shape_settings.SetEmbedded();
     ShapeSettings::ShapeResult block_shape_result = block_shape_settings.Create();
     ShapeRefC                  block_shape        = block_shape_result.Get();
-    BodyCreationSettings       block_body_settings(block_shape, RVec3(x, y, z), Quat::sIdentity(),
-                                                   EMotionType::Static, Layers::NON_MOVING);
+    BodyCreationSettings       block_body_settings(block_shape, RVec3((float)x, (float)y, (float)z),
+                                                   Quat::sIdentity(), EMotionType::Static,
+                                                   Layers::NON_MOVING);
     Body                      *block = body_interface.CreateBody(block_body_settings);
     body_interface.AddBody(block->GetID(), EActivation::DontActivate);
     physics_body_ = block->GetID();
